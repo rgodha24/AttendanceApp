@@ -1,0 +1,14 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /Users/JackV/local/bin/firebase serve
+[debug] CLI Version:  3.0.7
+[debug] Platform:     darwin
+[debug] Node Version: v6.3.1
+[debug] Time:         Fri Jan 20 2017 00:00:17 GMT-0700 (MST)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /Users/JackV/GitHub/AttendanceApp/website
+[info] Public Directory: public
+[info] 
+[info] Server listening at: http://localhost:5000
