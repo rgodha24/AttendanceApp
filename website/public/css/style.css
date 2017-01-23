@@ -1,0 +1,25 @@
+/*.noUi-target[disabled] .noUi-tooltip {
+    background-color: 123;
+}
+
+.noUi-target[disabled] .noUi-handle {
+    background-color: 123;
+}*/
+.noUi-connect {
+    background: #ee6e73
+}
+.noUi-horizontal .noUi-handle {
+    background-color: #D32F2F
+}
+
+[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:before, [type="radio"].with-gap:checked+label:after {
+    border: 2px solid #D32F2F;
+}
+[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:after {
+    background-color: #D32F2F;
+}
+
+
+.select-wrapper input.select-dropdown  {
+	height:38px;
+}
