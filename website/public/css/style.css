@@ -23,3 +23,21 @@
 .select-wrapper input.select-dropdown  {
 	height:38px;
 }
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+main {
+	flex: 1 0 auto;
+}
+
+th:first-child {
+	padding-left: 10px;
+}
+
+td:first-child {
+	padding-left: 10px;
+}

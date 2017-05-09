@@ -11,152 +11,143 @@
 		<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 	</head>
 	<body>
-		<nav class="red darken-2" role="navigation">
-			<div class="nav-wrapper container">
-				<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="#" class="brand-logo">BCP Attendance</a>
-				<ul class="right hide-on-med-and-down">
-					<li><a href="addcourse.html">Add Class</a></li>
-				</ul>
-				<ul id="nav-mobile" class="side-nav">
-					<li><a href="addcourse.html">Add Class</a></li>
-				</ul>
-				<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
-			</div>
-		</nav>
-		<div class="section no-pad-bot" id="settings-bar">
-			<div class="container">
-				<div class="row center white lighten-5 card-panel ">
-					<form action="#" class="">
-						<div class="col s5">
-							<h5 class="left-align">Time</h5>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour1" />
-								<label for="hour1">8:00 AM - 8:55 AM</label>
-							</p>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour2" />
-								<label for="hour2">8:55 AM - 9:50 AM</label>
-							</p>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour3"  />
-								<label for="hour3">10:00 AM - 11:05 AM</label>
-							</p>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour4" />
-								<label for="hour4">11:05 AM - 12:05 PM</label>
-							</p>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour5" />
-								<label for="hour5">12:45 PM - 1:50 PM</label>
-							</p>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour6" />
-								<label for="hour6">1:50 PM - 2:45 PM</label>
-							</p>
-							<p>
-								<input class="with-gap" name="group1" type="radio" id="hour7" />
-								<label for="hour7">Custom Time: <span id="event-start"></span> - <span id="event-end"></span></label>
-								<br>
-							<div id="sliderTime"></div>
-							</p>
-						</div>
-						<div class="col offset-s2 s5">
-							<h5 class="left-align">Class</h5>
-							<select>
-								<option value="" disabled selected>Choose your option</option>
-								<option value="1">Option 1</option>
-								<option value="2">Option 2</option>
-								<option value="3">Option 3</option>
-							</select>
-							<label>Materialize Select</label>
-						</div>
-						<div class="col s12">
-							<a href="http://materializecss.com/getting-started.html" id="download-button" class="btn-large waves-effect waves-light red white-text">Load</a>
-						</div>
-					</form>
+		<main>
+			<nav class="red darken-2" role="navigation">
+				<div class="nav-wrapper container">
+					<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="#" class="brand-logo">BCP Attendance</a>
+					<ul class="right hide-on-med-and-down">
+						<li><a href="addcourse.html">Add Class</a></li>
+					</ul>
+					<ul id="nav-mobile" class="side-nav">
+						<li><a href="addcourse.html">Add Class</a></li>
+					</ul>
+					<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
 				</div>
-				<br><br>
+			</nav>
+			<div class="section no-pad-bot" id="settings-bar">
+				<div class="container">
+					<div class="row center white lighten-5 card-panel ">
+						<form action="#" class="">
+							<div id="radio" class="col s5">
+								<h5 class="left-align">Time</h5>
+								<p>
+									<input value='["8:00","8:55"]' class="with-gap" name="time" type="radio" id="hour1" />
+									<label for="hour1">8:00 AM - 8:55 AM</label>
+								</p>
+								<p>
+									<input value='["8:55","9:50"]' class="with-gap" name="time" type="radio" id="hour2" />
+									<label for="hour2">8:55 AM - 9:50 AM</label>
+								</p>
+								<p>
+									<input value='["9:50","11:05"]' class="with-gap" name="time" type="radio" id="hour3"  />
+									<label for="hour3">10:00 AM - 11:05 AM</label>
+								</p>
+								<p>
+									<input value='["11:05","12:05"]' class="with-gap" name="time" type="radio" id="hour4" />
+									<label for="hour4">11:05 AM - 12:05 PM</label>
+								</p>
+								<p>
+									<input value='["12:05","13:50"]' class="with-gap" name="time" type="radio" id="hour5" />
+									<label for="hour5">12:45 PM - 1:50 PM</label>
+								</p>
+								<p>
+									<input value='["13:50","14:45"]' class="with-gap" name="time" type="radio" id="hour6" />
+									<label for="hour6">1:50 PM - 2:45 PM</label>
+								</p>
+								<p>
+									<input value='["8:00","14:00"]'class="with-gap" name="time" type="radio" id="hour7" />
+									<label for="hour7">Custom Time: <span id="event-start"></span> - <span id="event-end"></span></label>
+									<br>
+									<div id="sliderTime"></div>
+								</p>
+							</div>
+							<div id="courses_selector_container" class="col offset-s2 s5">
+								<h5 class="left-align">Class</h5>
+								<select id="course_select">
+									<option value="" disabled selected>Choose your option</option>
+								</select>
+								<label>Course Select</label>
+							</div>
+							<!-- <div class="col s12">
+								<a id="download-button" onclick="update_absent()" class="btn-large waves-effect waves-light red white-text">Load</a>
+							</div> -->
+						</form>
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="container">
-			<div class="section">
-				<!--   Icon Section   --><!-- 
+			<div class="container">
+				<div class="section">
 					<div class="row">
-					  <div class="col s12 m4">
-					    <div class="icon-block">
-					      <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
-					      <h5 class="center">Speeds up development</h5>
-					
-					      <p class="light">We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.</p>
-					    </div>
-					  </div>
-					
-					  <div class="col s12 m4">
-					    <div class="icon-block">
-					      <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
-					      <h5 class="center">User Experience Focused</h5>
-					
-					      <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
-					    </div>
-					  </div>
-					
-					  <div class="col s12 m4">
-					    <div class="icon-block">
-					      <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
-					      <h5 class="center">Easy to work with</h5>
-					
-					      <p class="light">We have provided detailed documentation as well as specific code examples to help new users get started. We are also always open to feedback and can answer any questions a user may have about Materialize.</p>
-					    </div>
-					  </div>
-					</div> -->
+					  	<div class="col s12">
+					    	<div class="row">
+					     		<h5 class="center">Not Signed In</h5>
+								<table class="striped">
+							        <thead>
+							          <tr>
+							              <th>Sortable Name</th>
+							              <th>Name</th>
+							              <th>Student ID</th>
+							          </tr>
+							        </thead>
+							        <tbody id="absent_table">
+							        	
+							        </tbody>
+							    </table>
+				    		</div>
+				    		<hr>
+					    	<div class="row">
+					     		<h5 class="center">Signed In</h5>
+								<table class="striped">
+							        <thead>
+							          <tr>
+							              <th>Sortable Name</th>
+							              <th>Student ID</th>
+							              <th>Time Of Sign In</th>
+							          </tr>
+							        </thead>
+							        <tbody id="present_table">
+							        	
+							        </tbody>
+							    </table>
+				    		</div>
+						</div>
+					</div>
+					<br><br>
+				</div>
 			</div>
-			<br><br>
-			<div class="section">
-			</div>
-		</div>
+		</main>
 		<footer class="page-footer red darken-2">
 			<div class="container">
 				<div class="row">
 					<div class="col l6 s12">
-						<h5 class="white-text">Company Bio</h5>
-						<p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
-					</div>
-					<div class="col l3 s12">
-						<h5 class="white-text">Settings</h5>
-						<ul>
-							<li><a class="white-text" href="#!">Link 1</a></li>
-							<li><a class="white-text" href="#!">Link 2</a></li>
-							<li><a class="white-text" href="#!">Link 3</a></li>
-							<li><a class="white-text" href="#!">Link 4</a></li>
-						</ul>
-					</div>
-					<div class="col l3 s12">
-						<h5 class="white-text">Connect</h5>
-						<ul>
-							<li><a class="white-text" href="#!">Link 1</a></li>
-							<li><a class="white-text" href="#!">Link 2</a></li>
-							<li><a class="white-text" href="#!">Link 3</a></li>
-							<li><a class="white-text" href="#!">Link 4</a></li>
-						</ul>
+						<h5 class="white-text">Project Description</h5>
+						<p class="grey-text text-lighten-4">This project will help teachers keep track of their attendance while also not eating into class time, and is especially useful for loosely structured classes like the Innovative Tech classes.</p>
 					</div>
 				</div>
 			</div>
 			<div class="footer-copyright">
 				<div class="container">
-					Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+					Made by <a class="orange-text text-lighten-3" href="http://jackvenberg.com">Jack Venberg</a>
 				</div>
 			</div>
 		</footer>
-		<!--  Scripts-->
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script src="js/materialize.js"></script>
 		<script src="js/wNumb.js"></script>
 		<script src="js/nouislider.min.js"></script>
-		<script type="text/javascript" src="js/main.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function() {
-			  $('select').material_select();
-			});
+		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+		<script>
+		  // Initialize Firebase
+		  // TODO: Replace with your project's customized code snippet
+		  var config = {
+		    apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
+		    authDomain: "brophyattendance.firebaseapp.com",
+		    databaseURL: "https://brophyattendance.firebaseio.com",
+		    storageBucket: "brophyattendance.appspot.com",
+		    messagingSenderId: "687148024963"
+		  };
+		  firebase.initializeApp(config);
 		</script>
+		<script type="text/javascript" src="js/main.js"></script>
 	</body>
 </html>

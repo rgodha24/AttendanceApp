@@ -11,119 +11,115 @@
 		<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 	</head>
 	<body>
-		<nav class="red darken-2" role="navigation">
-			<div class="nav-wrapper container">
-				<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="/" class="brand-logo">BCP Attendance</a>
-				<ul class="right hide-on-med-and-down">
-					<li class="active"><a href="addcourse.html">Add Class</a></li>
-				</ul>
-				<ul id="nav-mobile" class="side-nav">
-					<li class="active"><a href="addcourse.html">Add Class</a></li>
-				</ul>
-				<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
-			</div>
-		</nav>
-		<div class="section no-pad-bot" id="settings-bar">
-			<div class="container">
-				<div class="row white lighten-5 card-panel ">
-					<div class="row">
-						<div class="input-field col s6">
-							<input placeholder="" id="course_number" type="number" class="validate">
-							<label for="course_number">Course Number</label>
+		<main>
+			<nav class="red darken-2" role="navigation">
+				<div class="nav-wrapper container">
+					<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="/" class="brand-logo">BCP Attendance</a>
+					<ul class="right hide-on-med-and-down">
+						<li class="active"><a href="addcourse.html">Add Class</a></li>
+					</ul>
+					<ul id="nav-mobile" class="side-nav">
+						<li class="active"><a href="addcourse.html">Add Class</a></li>
+					</ul>
+					<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+				</div>
+			</nav>
+			<div class="section no-pad-bot" id="settings-bar">
+				<div class="container">
+					<div class="row white lighten-5 card-panel ">
+						<div class="row">
+							<div class="input-field col s6">
+								<input placeholder="" id="course_number" type="number" class="validate">
+								<label for="course_number">Course Number</label>
+							</div>
+							<div class="input-field col s6">
+								<a class="waves-effect waves-light btn red darken-1" id="link_url" target="_blank" download="class.json">Download Class Data</a>
+							</div>
 						</div>
-						<div class="input-field col s6">
-							<a class="waves-effect waves-light btn" id="link_url" target="_blank" download="class.json">Download Class Data</a>
-						</div>
-					</div>
-					<div class="row">
-						<div class="input-field col s3">
-							<input placeholder="" id="course_name" type="text" class="validate">
-							<label for="course_name">Course Name</label>
-						</div>
-						<div class="col s3">
-							<label>Period Number</label>
-							<select id="period_number">
-								<option value="" disabled selected>Select Period</option>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-							</select>
-						</div>
-						<div class="col s4">
-							<form action="#">
-								<div class="file-field input-field">
-									<div class="btn">
-										<span>File</span>
-										<input id="uploaded_file" type="file">
+						<div class="row">
+							<div class="input-field col s3">
+								<input placeholder="" id="course_name" type="text" class="validate">
+								<label for="course_name">Course Name</label>
+							</div>
+							<div class="col s3">
+								<label>Period Number</label>
+								<select id="period_number">
+									<option value="" disabled selected>Select Period</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+									<option value="7">7</option>
+								</select>
+							</div>
+							<div class="col s4">
+								<form action="#">
+									<div class="file-field input-field">
+										<div class="btn red darken-1">
+											<span>File</span>
+											<input id="uploaded_file" type="file">
+										</div>
+										<div class="file-path-wrapper">
+											<input class="file-path validate" type="text">
+										</div>
 									</div>
-									<div class="file-path-wrapper">
-										<input class="file-path validate" type="text">
-									</div>
-								</div>
-							</form>
-						</div>
-						<div class="input-field col s2">
-							<a class="waves-effect waves-light btn" id="link_url" onclick="uploadFile()">Add Class</a>
+								</form>
+							</div>
+							<div class="input-field col s2">
+								<a class="waves-effect waves-light btn red darken-1" id="link_url" onclick="uploadFile()">Add Class</a>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="container">
-			<div class="section">
-				<ul class="collapsible" data-collapsible="accordion">
-					<li>
-						<div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
-						<div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-					</li>
-					<li>
-					  <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
-					  <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-					</li>
-					<li>
-					  <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
-					  <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-					</li>
-				</ul>
+			<div class="container">
+				<div class="section">
+					<ul id="course_list" class="collapsible" data-collapsible="accordion">
+						<li>
+							<div class="collapsible-header"><i class="material-icons">loop</i>Loading...</div>
+							<div class="collapsible-body"><p>Loading User Data</p></div>
+						</li>
+					</ul>
+				</div>
+				<div id="delete_course_modal" class="modal" style="width: 300px">
+				    <div class="modal-content">
+				      <h5>Delete Course</h5>
+				      <p>Are you sure you wish to delete this course?</p>
+				    </div>
+				    <div class="modal-footer">
+				      <a href="#!" onclick="delete_course()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
+				      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+				    </div>
+				</div>
+				<div id="delete_student_modal" class="modal" style="width: 300px">
+				    <div class="modal-content">
+				      <h5>Delete Student</h5>
+				      <p>Are you sure you wish to delete this student?</p>
+				    </div>
+				    <div class="modal-footer">
+				      <a href="#!" onclick="delete_student()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
+				      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+				    </div>
+				</div>
+				<br><br>
+				<div class="section">
+				</div>
 			</div>
-			<br><br>
-			<div class="section">
-			</div>
-		</div>
+		</main>
 		<footer class="page-footer red darken-2">
 			<div class="container">
 				<div class="row">
 					<div class="col l6 s12">
-						<h5 class="white-text">Company Bio</h5>
-						<p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
-					</div>
-					<div class="col l3 s12">
-						<h5 class="white-text">Settings</h5>
-						<ul>
-							<li><a class="white-text" href="#!">Link 1</a></li>
-							<li><a class="white-text" href="#!">Link 2</a></li>
-							<li><a class="white-text" href="#!">Link 3</a></li>
-							<li><a class="white-text" href="#!">Link 4</a></li>
-						</ul>
-					</div>
-					<div class="col l3 s12">
-						<h5 class="white-text">Connect</h5>
-						<ul>
-							<li><a class="white-text" href="#!">Link 1</a></li>
-							<li><a class="white-text" href="#!">Link 2</a></li>
-							<li><a class="white-text" href="#!">Link 3</a></li>
-							<li><a class="white-text" href="#!">Link 4</a></li>
-						</ul>
+						<h5 class="white-text">Project Description</h5>
+						<p class="grey-text text-lighten-4">This project will help teachers keep track of their attendance while also not eating into class time, and is especially useful for loosely structured classes like the Innovative Tech classes.</p>
 					</div>
 				</div>
 			</div>
 			<div class="footer-copyright">
 				<div class="container">
-					Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+					Made by <a class="orange-text text-lighten-3" href="http://jackvenberg.com">Jack Venberg</a>
 				</div>
 			</div>
 		</footer>
