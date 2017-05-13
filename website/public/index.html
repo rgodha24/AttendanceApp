@@ -9,12 +9,19 @@
 		<link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/nouislider.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/manifest.json">
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#b91d47">
+		<meta name="theme-color" content="#ffffff">
 	</head>
 	<body>
 		<main>
 			<nav class="red darken-2" role="navigation">
 				<div class="nav-wrapper container">
-					<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="#" class="brand-logo">BCP Attendance</a>
+					<a id="logo-container" href="#" class="brand-logo">BCP Attendance</a>
 					<ul class="right hide-on-med-and-down">
 						<li><a href="addcourse.html">Add Class</a></li>
 					</ul>
@@ -58,7 +65,7 @@
 									<input value='["8:00","14:00"]'class="with-gap" name="time" type="radio" id="hour7" />
 									<label for="hour7">Custom Time: <span id="event-start"></span> - <span id="event-end"></span></label>
 									<br>
-									<div id="sliderTime"></div>
+								<div id="sliderTime"></div>
 								</p>
 							</div>
 							<div id="courses_selector_container" class="col offset-s2 s5">
@@ -67,10 +74,11 @@
 									<option value="" disabled selected>Choose your option</option>
 								</select>
 								<label>Course Select</label>
+								<div class="row">
+									<br><br><br><br><br><br><br><br>
+									<a id="download-button" onclick="clear_history_dialog()" class="btn-large waves-effect waves-light red darken-2 white-text">Clear Today's Sign In</a>
+								</div>
 							</div>
-							<!-- <div class="col s12">
-								<a id="download-button" onclick="update_absent()" class="btn-large waves-effect waves-light red white-text">Load</a>
-							</div> -->
 						</form>
 					</div>
 				</div>
@@ -78,41 +86,59 @@
 			<div class="container">
 				<div class="section">
 					<div class="row">
-					  	<div class="col s12">
-					    	<div class="row">
-					     		<h5 class="center">Not Signed In</h5>
+						<div class="col s12">
+							<div class="row">
+								<h5 class="center">Not Signed In</h5>
 								<table class="striped">
-							        <thead>
-							          <tr>
-							              <th>Sortable Name</th>
-							              <th>Name</th>
-							              <th>Student ID</th>
-							          </tr>
-							        </thead>
-							        <tbody id="absent_table">
-							        	
-							        </tbody>
-							    </table>
-				    		</div>
-				    		<hr>
-					    	<div class="row">
-					     		<h5 class="center">Signed In</h5>
+									<thead>
+										<tr>
+											<th>Sortable Name</th>
+											<th>Name</th>
+											<th>Student ID</th>
+										</tr>
+									</thead>
+									<tbody id="absent_table">
+									</tbody>
+								</table>
+							</div>
+							<hr>
+							<div class="row">
+								<h5 class="center">Signed In</h5>
 								<table class="striped">
-							        <thead>
-							          <tr>
-							              <th>Sortable Name</th>
-							              <th>Student ID</th>
-							              <th>Time Of Sign In</th>
-							          </tr>
-							        </thead>
-							        <tbody id="present_table">
-							        	
-							        </tbody>
-							    </table>
-				    		</div>
+									<thead>
+										<tr>
+											<th>Sortable Name</th>
+											<th>Student ID</th>
+											<th>Time Of Sign In</th>
+										</tr>
+									</thead>
+									<tbody id="present_table">
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 					<br><br>
+				</div>
+			</div>
+			<div id="clear_history_modal" class="modal" style="width: 300px">
+				<div class="modal-content">
+					<h5>Clear Sign In History</h5>
+					<p>Are you sure you wish to clear today's sign in history?</p>
+				</div>
+				<div class="modal-footer">
+					<a href="#!" onclick="clear_history()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
+					<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+				</div>
+			</div>
+			<div id="debug_modal" class="modal" style="width: 300px">
+				<div class="modal-content">
+					<h5>Debug Code Scanned</h5>
+					<p>Debug barcode has been scanned successfully</p>
+				</div>
+				<div class="modal-footer">
+					<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Okay</a>
+					<!-- <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a> -->
 				</div>
 			</div>
 		</main>
@@ -137,16 +163,16 @@
 		<script src="js/nouislider.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
 		<script>
-		  // Initialize Firebase
-		  // TODO: Replace with your project's customized code snippet
-		  var config = {
-		    apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
-		    authDomain: "brophyattendance.firebaseapp.com",
-		    databaseURL: "https://brophyattendance.firebaseio.com",
-		    storageBucket: "brophyattendance.appspot.com",
-		    messagingSenderId: "687148024963"
-		  };
-		  firebase.initializeApp(config);
+			// Initialize Firebase
+			// TODO: Replace with your project's customized code snippet
+			var config = {
+			 	apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
+			 	authDomain: "brophyattendance.firebaseapp.com",
+			 	databaseURL: "https://brophyattendance.firebaseio.com",
+			 	storageBucket: "brophyattendance.appspot.com",
+			 	messagingSenderId: "687148024963"
+			};
+			firebase.initializeApp(config);
 		</script>
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
