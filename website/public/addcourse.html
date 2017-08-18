@@ -3,13 +3,13 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-		<title>Brophy Attendance App</title>
+		<title>Brophy Attendance App - Add Course</title>
 		<!-- CSS  -->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/nouislider.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-
+		<!-- Favicon -->
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -21,11 +21,12 @@
 		<main>
 			<nav class="red darken-2" role="navigation">
 				<div class="nav-wrapper container">
-					<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="/" class="brand-logo">BCP Attendance</a>
+					<!-- <img src="images/Brophycollegeprep.png" style="height:80%;padding-top:10%"> --><a id="logo-container" href="/" class="brand-logo">Brophy Attendance</a>
 					<ul class="right hide-on-med-and-down">
 						<li class="active"><a href="addcourse.html">Add Class</a></li>
 					</ul>
 					<ul id="nav-mobile" class="side-nav">
+						<li><a href="/">Home</a></li>
 						<li class="active"><a href="addcourse.html">Add Class</a></li>
 					</ul>
 					<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -35,23 +36,23 @@
 				<div class="container">
 					<div class="row white lighten-5 card-panel ">
 						<div class="row">
-							<div class="input-field col s6">
+							<div class="input-field col m6 s12">
 								<input placeholder="" id="course_number" type="number" class="validate">
 								<label for="course_number">Course Number</label>
 							</div>
-							<div class="input-field col s6">
+							<div class="input-field col m6 s12">
 								<a class="waves-effect waves-light btn red darken-1" id="link_url" target="_blank" download="class.json">Download Class Data</a>
 							</div>
 						</div>
 						<div class="row">
-							<div class="input-field col s3">
+							<div class="input-field col m3 s12">
 								<input placeholder="" id="course_name" type="text" class="validate">
 								<label for="course_name">Course Name</label>
 							</div>
-							<div class="col s3">
+							<div class="col m2 s12">
 								<label>Period Number</label>
 								<select id="period_number">
-									<option value="" disabled selected>Select Period</option>
+									<option value="" disabled selected>Period</option>
 									<option value="1">1</option>
 									<option value="2">2</option>
 									<option value="3">3</option>
@@ -61,7 +62,7 @@
 									<option value="7">7</option>
 								</select>
 							</div>
-							<div class="col s4">
+							<div class="col m4 s12">
 								<form action="#">
 									<div class="file-field input-field">
 										<div class="btn red darken-1">
@@ -74,8 +75,11 @@
 									</div>
 								</form>
 							</div>
-							<div class="input-field col s2">
+							<div class="input-field col m2 s12">
 								<a class="waves-effect waves-light btn red darken-1" id="link_url" onclick="uploadFile()">Add Class</a>
+							</div>
+							<div class="center-align input-field col m1 s12" style="margin-top: 20px">
+								<a class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Upload Canvas JSON file or CSV File (Sortable_Name (tab) Name (tab) ID)" style="color: inherit"><i class="material-icons">info</i></a>
 							</div>
 						</div>
 					</div>
@@ -92,31 +96,28 @@
 						</li>
 					</ul>
 				</div>
-				<div id="delete_course_modal" class="modal" style="width: 300px">
-					<div class="modal-content">
-						<h5>Delete Course</h5>
-						<p>Are you sure you wish to delete this course?</p>
-					</div>
-					<div class="modal-footer">
-						<a href="#!" onclick="delete_course()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
-						<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
-					</div>
+			</div>
+			<div id="delete_course_modal" class="modal">
+				<div class="modal-content">
+					<h5>Delete Course</h5>
+					<p>Are you sure you wish to delete this course?</p>
 				</div>
-				<div id="delete_student_modal" class="modal" style="width: 300px">
-					<div class="modal-content">
-						<h5>Delete Student</h5>
-						<p>Are you sure you wish to delete this student?</p>
-					</div>
-					<div class="modal-footer">
-						<a href="#!" onclick="delete_student()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
-						<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
-					</div>
-				</div>
-				<br><br>
-				<div class="section">
+				<div class="modal-footer">
+					<a href="#!" onclick="delete_course()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
+					<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
 				</div>
 			</div>
-			<div id="debug_modal" class="modal" style="width: 300px">
+			<div id="delete_student_modal" class="modal">
+				<div class="modal-content">
+					<h5>Delete Student</h5>
+					<p>Are you sure you wish to delete this student?</p>
+				</div>
+				<div class="modal-footer">
+					<a href="#!" onclick="delete_student()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
+					<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+				</div>
+			</div>
+			<div id="debug_modal" class="modal">
 				<div class="modal-content">
 					<h5>Debug Code Scanned</h5>
 					<p>Debug barcode has been scanned successfully</p>
@@ -142,15 +143,12 @@
 				</div>
 			</div>
 		</footer>
-		<!--  Scripts-->
+		<!-- Scripts-->
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script src="js/materialize.js"></script>
-		<script src="js/wNumb.js"></script>
-		<script src="js/nouislider.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+		<script src="js/papaparse.min.js"></script>
 		<script>
-			// Initialize Firebase
-			// TODO: Replace with your project's customized code snippet
 			var config = {
 			  apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
 			  authDomain: "brophyattendance.firebaseapp.com",

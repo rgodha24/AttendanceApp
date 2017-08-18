@@ -134,7 +134,7 @@ function delete_course_dialog(element) {
 }
 
 function delete_course() {
-	console.log('courses/' + course_to_delete)
+	console.log('courses/' + course_to_delete);
 	firebase.database().ref('courses/' + course_to_delete).remove();
 	Materialize.toast("Course Successfully Deleted", 4000);
 }
@@ -142,36 +142,82 @@ function delete_course() {
 function delete_student_dialog(element) {
 	$('#delete_student_modal').modal('open');
 	student_course_to_delete = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.firstChild.getAttribute("course_id");
-	student_to_delete = element.parentElement.parentElement.childNodes[2].innerHTML
+	student_to_delete = element.parentElement.parentElement.childNodes[2].innerHTML;
 }
 
 function delete_student() {
-	console.log('courses/' + student_course_to_delete)
+	console.log('courses/' + student_course_to_delete);
 	firebase.database().ref('courses/' + student_course_to_delete + "/students/" + student_to_delete).remove();
 	Materialize.toast("Student Successfully Deleted", 4000);
 }
 
 fr.onload = function(e) {
-	var course_data = JSON.parse(e.target.result.substring(9))
-	if (course_data[0].sis_user_id == null) {
-		Materialize.toast('Invalid course data', 4000)
-		return
-	}
-	var filtered_course_data = {}
-	for (var i = 0; i < course_data.length; i++) {
-		delete course_data[i].id
-		delete course_data[i].integration_id
-		delete course_data[i].login_id
-		delete course_data[i].root_account
-		delete course_data[i].short_name
-		delete course_data[i].sis_login_id
-		filtered_course_data[course_data[i].sis_user_id] = course_data[i];
-	}
-	var course_name = document.getElementById("course_name").value
-	var course_period = document.getElementById("period_number").value
+	var fileInput = document.getElementById('uploaded_file');
+	var fileString = fileInput.files[0].name;
+	var fileType = fileInput.files[0].type;
+	console.log(fileType)
+	var course_name = document.getElementById("course_name").value;
+	var course_period = document.getElementById("period_number").value;
+	if (fileType == "application/json") {
+		var course_data = JSON.parse(e.target.result.substring(9));
+		if (course_data[0].sis_user_id == null) {
+			Materialize.toast('Invalid course data', 4000)
+			return
+		}
+		var filtered_course_data = {}
+		for (var i = 0; i < course_data.length; i++) {
+			delete course_data[i].id;
+			delete course_data[i].integration_id;
+			delete course_data[i].login_id;
+			delete course_data[i].root_account;
+			delete course_data[i].short_name;
+			delete course_data[i].sis_login_id;
+			filtered_course_data[course_data[i].sis_user_id] = course_data[i];
+		}
 
-	// console.log(course_name,course_period)
-	add_course(course_name, course_period, filtered_course_data)
+		// console.log(course_name,course_period)
+		add_course(course_name, course_period, filtered_course_data);
+	} else if (fileType == "text/csv") {
+		var csv = e.target.result;
+		var data = Papa.parse(csv, {
+			// delimiter: "\t",	// auto-detect
+			// newline: "\n",
+		}).data;
+		var courseData = {}
+
+		for (var i = 0; i < data.length; i++) {
+			console.log(data[i][2])
+			courseData[parseInt(data[i][2])] = {
+									"sis_user_id": data[i][2].replace(/(\r\n|\n|\r)/gm,""),
+									"name": data[i][1],
+									"sortable_name": data[i][0]
+									};
+		}
+
+		add_course(course_name, course_period, courseData);
+		console.log(data);
+	} else if (fileType == "application/vnd.ms-excel") {
+		var csv = e.target.result;
+		var data = Papa.parse(csv, {
+			// delimiter: "\t",	// auto-detect
+			newline: "\r\r",
+		}).data;
+		var courseData = {}
+
+		for (var i = 0; i < data.length; i++) {
+			console.log(data[i][2])
+			courseData[parseInt(data[i][2])] = {
+									"sis_user_id": data[i][2].replace(/(\r\n|\n|\r)/gm,""),
+									"name": data[i][1],
+									"sortable_name": data[i][0]
+									};
+		}
+
+		add_course(course_name, course_period, courseData);
+		console.log(data); 
+	} else {
+		Materialize.toast("Invalid File Format");
+	}
 
 	// console.log(filtered_course_data)
 };
@@ -201,6 +247,7 @@ function debug_dialog() {
 
 
 $(document).ready(function() {
+	$(".button-collapse").sideNav();
 	$('select').material_select();
 	$('.modal').modal();
 });

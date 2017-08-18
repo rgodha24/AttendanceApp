@@ -3,13 +3,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+		<link href="https://fonts.googleapis.com/css?family=Lora|Taviraj" rel="stylesheet">
 		<title>Brophy Attendance App</title>
 		<!-- CSS  -->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/nouislider.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-
+		<!-- Favicon -->
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -21,11 +22,12 @@
 		<main>
 			<nav class="red darken-2" role="navigation">
 				<div class="nav-wrapper container">
-					<a id="logo-container" href="#" class="brand-logo">BCP Attendance</a>
+					<a id="logo-container" href="#" class="brand-logo">Brophy Attendance</a>
 					<ul class="right hide-on-med-and-down">
 						<li><a href="addcourse.html">Add Class</a></li>
 					</ul>
 					<ul id="nav-mobile" class="side-nav">
+						<li class="active"><a href="/">Home</a></li>
 						<li><a href="addcourse.html">Add Class</a></li>
 					</ul>
 					<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -33,53 +35,66 @@
 			</nav>
 			<div class="section no-pad-bot" id="settings-bar">
 				<div class="container">
-					<div class="row center white lighten-5 card-panel ">
-						<form action="#" class="">
-							<div id="radio" class="col s5">
-								<h5 class="left-align">Time</h5>
-								<p>
-									<input value='["8:00","8:55"]' class="with-gap" name="time" type="radio" id="hour1" />
-									<label for="hour1">8:00 AM - 8:55 AM</label>
-								</p>
-								<p>
-									<input value='["8:55","9:50"]' class="with-gap" name="time" type="radio" id="hour2" />
-									<label for="hour2">8:55 AM - 9:50 AM</label>
-								</p>
-								<p>
-									<input value='["9:50","11:05"]' class="with-gap" name="time" type="radio" id="hour3"  />
-									<label for="hour3">10:00 AM - 11:05 AM</label>
-								</p>
-								<p>
-									<input value='["11:05","12:05"]' class="with-gap" name="time" type="radio" id="hour4" />
-									<label for="hour4">11:05 AM - 12:05 PM</label>
-								</p>
-								<p>
-									<input value='["12:05","13:50"]' class="with-gap" name="time" type="radio" id="hour5" />
-									<label for="hour5">12:45 PM - 1:50 PM</label>
-								</p>
-								<p>
-									<input value='["13:50","14:45"]' class="with-gap" name="time" type="radio" id="hour6" />
-									<label for="hour6">1:50 PM - 2:45 PM</label>
-								</p>
-								<p>
-									<input value='["8:00","14:00"]'class="with-gap" name="time" type="radio" id="hour7" />
-									<label for="hour7">Custom Time: <span id="event-start"></span> - <span id="event-end"></span></label>
-									<br>
-								<div id="sliderTime"></div>
-								</p>
-							</div>
-							<div id="courses_selector_container" class="col offset-s2 s5">
-								<h5 class="left-align">Class</h5>
-								<select id="course_select">
-									<option value="" disabled selected>Choose your option</option>
-								</select>
-								<label>Course Select</label>
+					<div id="settings-card" class="row center white lighten-5 card-panel ">
+						<div class="row">
+							<form>
+								<div class="col m5 s12">
+									<h5 class="left-align">Time</h5>
+									<div id="timeRadio">
+										<!-- <p>
+											<input value='["8:00","8:55"]' class="with-gap" name="time" type="radio" id="hour1" />
+											<label for="hour1">8:00 AM - 8:55 AM</label>
+										</p>
+										<p>
+											<input value='["8:55","9:50"]' class="with-gap" name="time" type="radio" id="hour2" />
+											<label for="hour2">8:55 AM - 9:50 AM</label>
+										</p>
+										<p>
+											<input value='["9:50","11:05"]' class="with-gap" name="time" type="radio" id="hour3"  />
+											<label for="hour3">10:00 AM - 11:05 AM</label>
+										</p>
+										<p>
+											<input value='["11:05","12:05"]' class="with-gap" name="time" type="radio" id="hour4" />
+											<label for="hour4">11:05 AM - 12:05 PM</label>
+										</p>
+										<p>
+											<input value='["12:05","13:50"]' class="with-gap" name="time" type="radio" id="hour5" />
+											<label for="hour5">12:45 PM - 1:50 PM</label>
+										</p>
+										<p>
+											<input value='["13:50","14:45"]' class="with-gap" name="time" type="radio" id="hour6" />
+											<label for="hour6">1:50 PM - 2:45 PM</label>
+										</p> -->
+									</div>
+									<div id="custom-slider" hidden>
+										<p>
+											<input value='["8:00","14:00"]'class="with-gap" name="time" type="radio" id="hour7" />
+											<label for="hour7">Custom Time: <span id="event-start"></span> - <span id="event-end"></span></label>
+											<div id="sliderTime"></div>
+										</p>
+									</div>
+								</div>
+							</form>
+							<div id="courses_selector_container" class="col offset-m2 s12 m5">
 								<div class="row">
-									<br><br><br><br><br><br><br><br>
-									<a id="download-button" onclick="clear_history_dialog()" class="btn-large waves-effect waves-light red darken-2 white-text">Clear Today's Sign In</a>
+										<h5 class="left-align">Date</h5>
+										<div id="datepicker" class="col m8 s12">
+											<input id="picker" type="date" class="datepicker">
+										</div>
+										<div class="col s12 m4">
+											<div class="row">
+												<a id="clear_day_button" onclick="clearHistoryDialog()" class="btn waves-effect waves-light red darken-2 white-text">Clear Day</a>
+											</div>
+										</div>
+								</div>
+								<div class="row">
+									<h5 class="left-align">Class</h5>
+									<select id="course_select">
+										<option value="" disabled selected>Choose your option</option>
+									</select>
 								</div>
 							</div>
-						</form>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -101,7 +116,7 @@
 									</tbody>
 								</table>
 							</div>
-							<hr>
+							<div class="divider"></div>
 							<div class="row">
 								<h5 class="center">Signed In</h5>
 								<table class="striped">
@@ -121,17 +136,17 @@
 					<br><br>
 				</div>
 			</div>
-			<div id="clear_history_modal" class="modal" style="width: 300px">
+			<div id="clear_history_modal" class="modal">
 				<div class="modal-content">
 					<h5>Clear Sign In History</h5>
 					<p>Are you sure you wish to clear today's sign in history?</p>
 				</div>
 				<div class="modal-footer">
-					<a href="#!" onclick="clear_history()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
+					<a href="#!" onclick="fireBase.clearHistory()" class="modal-action modal-close waves-effect waves-green btn-flat red white-text">Yes</a>
 					<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
 				</div>
 			</div>
-			<div id="debug_modal" class="modal" style="width: 300px">
+			<div id="debug_modal" class="modal"">
 				<div class="modal-content">
 					<h5>Debug Code Scanned</h5>
 					<p>Debug barcode has been scanned successfully</p>
@@ -163,8 +178,6 @@
 		<script src="js/nouislider.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
 		<script>
-			// Initialize Firebase
-			// TODO: Replace with your project's customized code snippet
 			var config = {
 			 	apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
 			 	authDomain: "brophyattendance.firebaseapp.com",
