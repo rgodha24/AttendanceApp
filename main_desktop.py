@@ -8,12 +8,6 @@ import ntplib
 import time
 from time import ctime
 
-time.sleep(10)
-
-c = ntplib.NTPClient()
-response = c.request('128.138.140.44', version=3)
-current_date = time.strftime("%Y/%m/%d", time.gmtime(response.tx_time))
-
 class AttendanceSystem():
     config = {
         "apiKey": "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
@@ -50,8 +44,10 @@ class AttendanceSystem():
             results = self.db.child("debug").child(current_date).push(data)
         else:
             # Pass the user's idToken to the push method
-            results = self.db.child("sign-in").child(current_date).child(id).push({".sv": "timestamp"})
-
+            results = self.db.child("sign-in-test").push({
+                                                            "time": {".sv": "timestamp"},
+                                                            "id": id
+                                                            })
 
 if __name__ == "__main__":
     AttendanceSystem().main()
