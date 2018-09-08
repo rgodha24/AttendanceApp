@@ -9,6 +9,7 @@
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/nouislider.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+		<link href="css/tablesort.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 		<!-- Favicon -->
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -20,15 +21,35 @@
 	</head>
 	<body>
 		<main>
+			<ul id="sign_out" class="dropdown-content">
+			  <li><a href="#!" onclick="fireBase.sign_out()">Sign Out</a></li>
+			</ul>
 			<nav class="red darken-2" role="navigation">
 				<div class="nav-wrapper container">
 					<a id="logo-container" href="#" class="brand-logo">Brophy Attendance</a>
 					<ul class="right hide-on-med-and-down">
 						<li><a href="addcourse.html">Add Class</a></li>
+				        <li>
+				        	<a class="dropdown-button valign-wrapper" href="#!" data-activates="sign_out">
+				        		<img id="profile_img" src="">
+				        		<span class="valign" id="profile_name"></span>
+				        		<i class="material-icons right">arrow_drop_down</i>
+				        	</a>
+				        </li>
 					</ul>
 					<ul id="nav-mobile" class="side-nav">
 						<li class="active"><a href="/">Home</a></li>
 						<li><a href="addcourse.html">Add Class</a></li>
+  						<li class="divider"></li>
+						<li id="profile_mobile">
+				        	<a href="profile.html" class="">
+				        		<img class="" id="profile_img_mobile" src="">
+				        		<span class="" id="profile_name_mobile"></span>
+				        	</a>
+				        </li>
+				        <li class="">
+				        	<a onclick="sign_out()">Sign Out</a>
+				        </li>
 					</ul>
 					<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
 				</div>
@@ -41,30 +62,6 @@
 								<div class="col m5 s12">
 									<h5 class="left-align">Time</h5>
 									<div id="timeRadio">
-										<!-- <p>
-											<input value='["8:00","8:55"]' class="with-gap" name="time" type="radio" id="hour1" />
-											<label for="hour1">8:00 AM - 8:55 AM</label>
-										</p>
-										<p>
-											<input value='["8:55","9:50"]' class="with-gap" name="time" type="radio" id="hour2" />
-											<label for="hour2">8:55 AM - 9:50 AM</label>
-										</p>
-										<p>
-											<input value='["9:50","11:05"]' class="with-gap" name="time" type="radio" id="hour3"  />
-											<label for="hour3">10:00 AM - 11:05 AM</label>
-										</p>
-										<p>
-											<input value='["11:05","12:05"]' class="with-gap" name="time" type="radio" id="hour4" />
-											<label for="hour4">11:05 AM - 12:05 PM</label>
-										</p>
-										<p>
-											<input value='["12:05","13:50"]' class="with-gap" name="time" type="radio" id="hour5" />
-											<label for="hour5">12:45 PM - 1:50 PM</label>
-										</p>
-										<p>
-											<input value='["13:50","14:45"]' class="with-gap" name="time" type="radio" id="hour6" />
-											<label for="hour6">1:50 PM - 2:45 PM</label>
-										</p> -->
 									</div>
 									<div id="custom-slider" hidden>
 										<p>
@@ -104,10 +101,10 @@
 						<div class="col s12">
 							<div class="row">
 								<h5 class="center">Not Signed In</h5>
-								<table class="striped">
+								<table id="absent" class="striped">
 									<thead>
 										<tr>
-											<th>Sortable Name</th>
+											<th data-sort-default>Sortable Name</th>
 											<th>Name</th>
 											<th>Student ID</th>
 										</tr>
@@ -119,12 +116,12 @@
 							<div class="divider"></div>
 							<div class="row">
 								<h5 class="center">Signed In</h5>
-								<table class="striped">
+								<table id="present" class="striped">
 									<thead>
 										<tr>
 											<th>Sortable Name</th>
 											<th>Student ID</th>
-											<th>Time Of Sign In</th>
+											<th data-sort-default>Time Of Sign In</th>
 										</tr>
 									</thead>
 									<tbody id="present_table">
@@ -159,34 +156,39 @@
 		</main>
 		<footer class="page-footer red darken-2">
 			<div class="container">
-				<div class="row">
+				<!-- <div class="row">
 					<div class="col l6 s12">
 						<h5 class="white-text">Project Description</h5>
 						<p class="grey-text text-lighten-4">This project will help teachers keep track of their attendance while also not eating into class time, and is especially useful for loosely structured classes like the Innovative Tech classes.</p>
 					</div>
-				</div>
+				</div> -->
 			</div>
 			<div class="footer-copyright">
 				<div class="container">
-					Made by <a class="orange-text text-lighten-3" href="http://jackvenberg.com">Jack Venberg</a>
+					&copy; 2016<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script>, <a class="orange-text text-lighten-3" href="mailto:jvenberg@uw.edu">Jack Venberg</a>
 				</div>
 			</div>
 		</footer>
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-		<script src="js/materialize.js"></script>
+		<script src="js/materialize.min.js"></script>
 		<script src="js/wNumb.js"></script>
 		<script src="js/nouislider.min.js"></script>
+		<script src="js/tablesort.min.js"></script>
+		<script src="js/tablesort.date.min.js"></script>
+		<script src="js/tablesort.number.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
 		<script>
 			var config = {
-			 	apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
-			 	authDomain: "brophyattendance.firebaseapp.com",
-			 	databaseURL: "https://brophyattendance.firebaseio.com",
-			 	storageBucket: "brophyattendance.appspot.com",
-			 	messagingSenderId: "687148024963"
+				apiKey: "AIzaSyBWbttyxQRQoha0JqeanWuF4pZgKcFbGXY",
+				authDomain: "brophyattendance.firebaseapp.com",
+				databaseURL: "https://brophyattendance.firebaseio.com",
+				storageBucket: "brophyattendance.appspot.com",
+				messagingSenderId: "687148024963"
 			};
 			firebase.initializeApp(config);
 		</script>
+		<script src="https://cdn.firebase.com/libs/firebaseui/2.3.0/firebaseui.js"></script>
+		<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.3.0/firebaseui.css" />
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
 </html>

@@ -102,6 +102,10 @@ td:first-child {
     width: 300px;
 }
 
+#add_student_modal {
+	width: 700px;
+}
+
 /* Selector */
 .select-wrapper input.select-dropdown  {
 	height:38px;
@@ -125,3 +129,26 @@ td:first-child {
 [type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:after {
     background-color: #D32F2F;
 }
+
+/* Profile */
+
+#profile_name, #profile_name_mobile nav li, nav ul, nav div, nav a{
+	height:100%;
+}
+#profile_img, #profile_img_mobile {
+	border-radius: 50%;
+	height: 30px;
+	margin-right: 10px
+}
+#profile_img_mobile {
+	margin-top: 4px;
+	float: left;
+}
+#profile_mobile {
+	padding-top: 6px;
+}
+#sign_out {
+	margin-top: 64px;
+    height: 50px;
+}
+

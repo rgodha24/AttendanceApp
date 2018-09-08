@@ -1,10 +1,10 @@
-
-
 var datePicker = new DatePicker();
 var slider = new Slider();
 var courseSelector = new CourseSelector();
 var studentLister = new StudentLister();
 var fireBase = new FireBase();
+var absentTable = new Tablesort(document.getElementById('absent'), {});
+var presentTable = new Tablesort(document.getElementById('present'), {});
 
 
 $(document).ready(function() {
@@ -12,29 +12,71 @@ $(document).ready(function() {
 	$('.modal').modal();
 });
 
-
 function clearHistoryDialog() {
 	$('#clear_history_modal').modal('open');
 }
 
 function debugDialog() {
-	$('#debug_modal').modal('open');
+	// $('#debug_modal').modal('open');
+	Materialize.toast("Debug Code Scanned", 2000);
 }
 
 function FireBase() {
 	this.database = firebase.database();
 	this.initialDebugLoaded = false;
+	this.user = undefined;
 
-	this.courseRef = this.database.ref("courses");
-	this.courseRef.on('value', function(snapshot) {
-		slider.buildTimes();
-		slider.addRadioUpdater();
-		slider.updateCurrentTime();
-		courseSelector.updateCourses(snapshot.val());
-		courseSelector.updateCoursePeriod(snapshot.val());
-		fireBase.forceUpdate();
-		this.courses = snapshot.val();
+	firebase.auth().onAuthStateChanged(function(user) {
+	  	if (user) {
+			document.getElementById("profile_name").innerHTML = user.displayName;
+			document.getElementById("profile_img").src = user.photoURL;
+			$(".dropdown-button").dropdown();
+
+			document.getElementById("profile_name_mobile").innerHTML = user.displayName;
+			document.getElementById("profile_img_mobile").src = user.photoURL;
+
+			fireBase.initCourseRef(user);
+
+	  	} else {
+		    var provider = new firebase.auth.GoogleAuthProvider();
+			firebase.auth().signInWithRedirect(provider);
+		 }
 	});
+
+	firebase.auth().getRedirectResult().then(function(result) {
+	  	if (result.credential) {
+	    	var token = result.credential.accessToken;
+	  	}
+	  	var user = result.user;
+	}).catch(function(error) {
+	  	var errorCode = error.code;
+	  	var errorMessage = error.message;
+	  	var email = error.email;
+	  	var credential = error.credential;
+	});
+
+	this.initCourseRef = function(user) {
+		this.courseRef = this.database.ref("users/" + user.uid + "/courses");
+		this.courseRef.on('value', function(snapshot) {
+			slider.buildTimes();
+			slider.addRadioUpdater();
+			slider.updateCurrentTime();
+			courseSelector.updateCourses(snapshot.val());
+			courseSelector.updateCoursePeriod(snapshot.val());
+			this.courses = snapshot.val();
+			studentLister.updateLists(null, this.courses)
+			fireBase.forceUpdate();
+		});
+	}
+
+	this.sign_out = function() {
+		firebase.auth().signOut().then(function() {
+		  // Sign-out successful.
+		}, function(error) {
+		  // An error happened.
+		});
+	}
+
 
 	this.date = new Date();
 	this.month = ((this.date.getMonth() + 1) < 10 ? '0' : '') + (this.date.getMonth() + 1);
@@ -54,10 +96,10 @@ function FireBase() {
 		this.updateSignInListener(selected_time_range);
 	}
 
-	this.signInListener = this.database.ref("sign-in-test");
+	this.signInListener = this.database.ref("sign-in");
 
 	this.updateSignInListener = function(selected_time_range) {
-		this.database.ref("sign-in-test").off();
+		this.database.ref("sign-in").off();
 		var startTime = selected_time_range[0];
 		var endTime = selected_time_range[1];
 
@@ -68,69 +110,82 @@ function FireBase() {
 		var endDate = datePicker.readDatePicker();
 		endDate.setHours(endTime.split(":")[0]);
 		endDate.setMinutes(endTime.split(":")[1]);
-		
-		this.database.ref("sign-in-test").orderByChild("time").startAt(startDate.getTime()).endAt(endDate.getTime()).on('value', function(snapshot) {
-			studentLister.updateLists(snapshot.val(), this.courses);
+
+		var firstTime = true;
+		this.database.ref("sign-in").orderByChild("time").startAt(startDate.getTime()).endAt(endDate.getTime()).on('value', function(snapshot) {
+			var student_data = snapshot.val();
+			studentLister.updateLists(student_data, this.courses);
+			if (!firstTime) {
+				var students = this.courses[courseSelector.getSelectedCourse()]["students"];
+				var id = student_data[Object.keys(student_data).pop()]["id"];
+				var student = students[id];
+				if (student == undefined) {
+					// Materialize.toast("Signed in: " + id + " (Not in Selected Course)", 3000);
+				} else {
+					Materialize.toast("Signed in: " + student["name"] + " (" + id + ")", 2000);
+				}
+			} else {
+				firstTime = false;
+			}
 		});
 	}
 
-
 	this.clearHistory = function() {
 		var date = datePicker.readDatePicker();
-		// var month = ((date.getMonth() + 1) < 10 ? '0' : '') + (date.getMonth() + 1);
-		// var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
-		// console.log(date.getTime())
-		// console.log(date.setDate(date.getDate() + 1))
 
-		this.database.ref("sign-in-test").orderByChild("time").startAt(date.getTime()).endAt(date.setDate(date.getDate() + 1)).once('value', function(snapshot) {
+		this.database.ref("sign-in").orderByChild("time").startAt(date.getTime()).endAt(date.setDate(date.getDate() + 1)).once('value', function(snapshot) {
 			var data = snapshot.val();
 			for (var key in data) {
 				data[key] = null;
 			}
-			fireBase.database.ref().child("sign-in-test").update(data)
+			fireBase.database.ref().child("sign-in").update(data)
 		});
 	}
 }
 
 function StudentLister() {
 	this.updateLists = function(sign_ins, courses) {
+		if (courses != null) {
+			var selectedCourse = courseSelector.getSelectedCourse();
+			var students = courses[selectedCourse]["students"];
 
-		var selectedCourse = courseSelector.getSelectedCourse();
-		var students = courses[selectedCourse]["students"];
+			var absent_array = [];
+			var present_array = [];
 
-		var absent_array = [];
-		var present_array = [];	
-
-		if (sign_ins == null) {
-			for (var key in students) {
-				var student = students[key];
-				absent_array.push([student["sortable_name"], student["name"], student["sis_user_id"]]);
-			}
-		} else {
-			for (var key in students) {
-				var student = students[key];
-
-				var student_sign_in = undefined;
-				for (var key in sign_ins) {
-					if (sign_ins[key]["id"] == student["sis_user_id"]) {
-						student_sign_in = sign_ins[key]["time"];
-					}
-				}
-				
-				if (student_sign_in != undefined) {
-					present_array.push([student["sortable_name"], student["sis_user_id"], student_sign_in]);
-				} else {
+			if (sign_ins == null) {
+				for (var key in students) {
+					var student = students[key];
 					absent_array.push([student["sortable_name"], student["name"], student["sis_user_id"]]);
 				}
-			}
-		}
-		
+			} else {
+				for (var key in students) {
+					var student = students[key];
 
-		present_array.sort(function(a,b) {return a[2] - b[2]});
-		present_array = present_array.map(function(x) {
-			return [x[0], x[1], slider.formatDate(new Date(x[2]))];
-		})
-		this.buildTable(present_array, absent_array);
+					var student_sign_in = undefined;
+					for (var key in sign_ins) {
+						if (sign_ins[key]["id"] == student["sis_user_id"]) {
+							student_sign_in = sign_ins[key]["time"];
+						}
+					}
+
+					if (student_sign_in != undefined) {
+						present_array.push([student["sortable_name"], student["sis_user_id"], student_sign_in]);
+					} else {
+						absent_array.push([student["sortable_name"], student["name"], student["sis_user_id"]]);
+					}
+				}
+			}
+
+
+			present_array.sort(function(a, b) {
+				return a[2] - b[2]
+			});
+			present_array = present_array.map(function(x) {
+				return [x[0], x[1], slider.formatDate(new Date(x[2]))];
+			})
+			this.buildTable(present_array, absent_array);
+			absentTable.refresh();
+		}
 	}
 
 	this.buildRows = function(table, student_array) {
@@ -151,7 +206,7 @@ function StudentLister() {
 		var tbody_present = document.getElementById("present_table");
 		tbody_absent.innerHTML = '';
 		tbody_present.innerHTML = '';
-		
+
 		this.buildRows(tbody_present, present_array);
 		this.buildRows(tbody_absent, absent_array);
 	}
@@ -166,7 +221,6 @@ function DatePicker() {
 		closeOnSelect: true,
 		closeOnClear: true,
 		onSet: function() {
-			this.close(true);
 			if (this.initialPickerLoaded) {
 				slider.buildTimes();
 				slider.addRadioUpdater();
@@ -175,10 +229,10 @@ function DatePicker() {
 			} else {
 				this.initialPickerLoaded = true;
 			}
-		    $(document.activeElement).blur();
+			$(document.activeElement).blur();
 		},
 		onClose: function() {
-		    $(document.activeElement).blur();
+			$(document.activeElement).blur();
 		},
 		onStart: function() {
 			this.set('select', new Date());
@@ -202,18 +256,27 @@ function CourseSelector() {
 		var current_course = document.getElementById("course_select").value;
 		var course_list = document.getElementById("course_select");
 		course_list.innerHTML = '';
-		for (var key in data) {
-			var course = data[key];
+		if (data != null) {
+			for (var key in data) {
+				var course = data[key];
 
-			var option_element = document.createElement("option");
-			option_element.value = course["id"];
-			if (course["id"] == current_course) {
-				option_element.setAttribute("selected", true);
+				var option_element = document.createElement("option");
+				option_element.value = course["id"];
+				if (course["id"] == current_course) {
+					option_element.setAttribute("selected", true);
+				}
+				option_element.innerHTML = course["name"] + " - Period " + course["period_num"];
+
+				course_list.appendChild(option_element);
 			}
-			option_element.innerHTML = course["name"] + " - Period " + course["period_num"];
-
+		} else {
+			var option_element = document.createElement("option");
+			option_element.innerHTML = "No Current Courses";
+			option_element.setAttribute("selected", true);
+			option_element.value = null;
 			course_list.appendChild(option_element);
 		}
+		
 		$('select').material_select();
 	}
 
@@ -257,13 +320,15 @@ function Slider() {
 			["10:10", "11:05", "hour3"],
 			["11:05", "12:05", "hour4"],
 			["12:50", "13:50", "hour5"],
-			["13:50", "14:45", "hour6"]],
+			["13:50", "14:45", "hour6"]
+		],
 		"wednesday": [
-			["8:55", "9:50", "hour1"],
-			["10:10", "11:05", "hour2"],
-			["11:05", "12:05", "hour3"],
-			["12:50", "13:50", "hour4"],
-			["13:50", "14:45", "hour5"]],
+			["8:55", "9:50", "hour2"],
+			["10:10", "11:05", "hour3"],
+			["11:05", "12:05", "hour4"],
+			["12:50", "13:50", "hour5"],
+			["13:50", "14:45", "hour6"]
+		],
 		"friday": [
 			["8:00", "8:55", "hour1"],
 			["8:55", "9:50", "hour2"],
@@ -276,9 +341,9 @@ function Slider() {
 
 	this.buildTimes = function() {
 		var dayOfWeek = datePicker.readDatePicker().getDay() - 1;
-		if (dayOfWeek < 0 || dayOfWeek > 4){
+		if (dayOfWeek < 0 || dayOfWeek > 4) {
 			dayOfWeek = 0;
-		} 
+		}
 		if (dayOfWeek == 2) {
 			var timeData = this.periodTimeData["wednesday"];
 		} else if (dayOfWeek == 4) {
@@ -298,15 +363,14 @@ function Slider() {
 			input.className = "with-gap";
 			input.name = "time";
 			input.id = timeData[i][2];
-			input.value = '["'+timeData[i][0]+'","'+timeData[i][1]+'"]';
+			input.value = '["' + timeData[i][0] + '","' + timeData[i][1] + '"]';
 			input.setAttribute('period', numberData[i]);
 
-			label.setAttribute('for',timeData[i][2]);
+			label.setAttribute('for', timeData[i][2]);
 			label.innerHTML = "Period " + numberData[i] + ": " + this.formatTime(timeData[i][0]) + " - " + this.formatTime(timeData[i][1])
 			radio.appendChild(input);
 			radio.appendChild(label);
 			timeRadio.appendChild(radio);
-			// periodData[i]
 		}
 		document.getElementById("custom-slider").removeAttribute("hidden");
 
@@ -339,7 +403,7 @@ function Slider() {
 		tooltips: [false, false],
 		// Two more timestamps indicate the handle starting positions.
 		start: [new Date(0, 0, 0, 8, 0, 0).getTime(), new Date(0, 0, 0, 14, 45, 0).getTime()],
-		// start: [new Date(0, 0, 0, 0, 0, 0).getTime(), new Date(0, 0, 0, 5, 30, 0).getTime()],
+		// start: [new Date(0, 0, 0, 0, 0, 0).getTime(), new Date(0, 0, 0, 23, 59, 0).getTime()],
 		// No decimals
 		format: wNumb({
 			decimals: 0
@@ -464,6 +528,3 @@ function Slider() {
 	});
 
 }
-
-
-

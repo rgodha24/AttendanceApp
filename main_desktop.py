@@ -28,7 +28,8 @@ class AttendanceSystem():
             while True:
                 try:
                     code = int(raw_input())
-                    self.post_data(code)
+                    if len(str(code)) == 5:
+                        self.post_data(code)
                 except ValueError:
                     print "Invalid Code"
         except KeyboardInterrupt:
@@ -41,13 +42,9 @@ class AttendanceSystem():
         }
 
         if id == 99999:
-            results = self.db.child("debug").child(current_date).push(data)
+            results = self.db.child("debug").push(data)
         else:
-            # Pass the user's idToken to the push method
-            results = self.db.child("sign-in-test").push({
-                                                            "time": {".sv": "timestamp"},
-                                                            "id": id
-                                                            })
+            results = self.db.child("sign-in").push(data)
 
 if __name__ == "__main__":
     AttendanceSystem().main()
