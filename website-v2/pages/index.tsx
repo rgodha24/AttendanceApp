@@ -13,12 +13,15 @@ export default function Home(props: { scanners: string[] }) {
    return (
       <div>
          <Navbar />
-         choose the name of hte scanner
+         choose the name of the scanner
          <br />
          {props.scanners.map((scanner) => {
             return (
-               <Link href={`/scanners/${scanner}`} key={scanner}>
-                  {scanner}
+               <Link href={`/scanners/${scanner}`} key={scanner} passHref>
+                  <a>
+                     {scanner}
+                     <br />
+                  </a>
                </Link>
             );
          })}

@@ -2,6 +2,7 @@ from time import sleep
 import pyrebase
 import random
 import time
+import requests
 config = {
     "apiKey": "AIzaSyCsS2X6EmlFI-_RlkAtrAGU2JDrjBWuwc4",
     "authDomain": "brophyattendance-v2.firebaseapp.com",
@@ -15,9 +16,10 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
-a = "random_scanner"
+scannerName = "random_scanner"
 
 while True:
-    print(db.child(f"sign-in/{a.strip()}").push({"id": random.randint(20, 25) *
-                                                 1000+random.randint(0, 350), "time": {".sv": "timestamp"}}))
+    print("posting data")
+    requests.post(
+        f"http://localhost:3000/api/{scannerName}/signIn/{random.randint(20,24)*1000 + random.randint(0,300)}")
     time.sleep(10)
