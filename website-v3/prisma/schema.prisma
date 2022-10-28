@@ -14,8 +14,7 @@ model People {
     id        Int      @id @default(autoincrement())
     firstName String
     lastName  String
-    Class     Class    @relation(fields: [classId], references: [id])
-    classId   Int
+    Class     Class[]
     signIns   SignIn[]
 }
 
@@ -38,9 +37,12 @@ model SignIn {
 
 model Scanner {
     id             Int      @id @default(autoincrement())
-    name           String
+    name           String   @unique
     signIns        SignIn[]
     purgeEveryDays Int      @default(14)
+    scannerSecret  String
+    createdBy      User     @relation(fields: [userId], references: [id])
+    userId         String
 }
 
 // Necessary for Next auth
@@ -79,6 +81,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     classes       Class[]
+    Scanner       Scanner[]
 }
 
 model VerificationToken {
