@@ -1,11 +1,20 @@
 import dayjs, { Dayjs } from "dayjs";
 import { Dispatch, useEffect, useState, SetStateAction } from "react";
 
-const DatePicker: React.FC<{ time: Dayjs; setTime: Dispatch<SetStateAction<Dayjs>> }> = (props) => {
+const DatePicker: React.FC<{
+  time: Dayjs;
+  setTime: Dispatch<SetStateAction<Dayjs>>;
+  onChange?: (time: Dayjs) => void;
+}> = ({ onChange, ...props }) => {
   const [dateString, setDateString] = useState(props.time.toDate().toLocaleString());
   useEffect(() => {
     setDateString(props.time.toDate().toLocaleString());
-  }, [props.time]);
+
+    if (typeof onChange === "function") {
+      onChange(props.time);
+      console.log("onChange called");
+    }
+  }, [props.time, onChange]);
 
   return (
     <div>

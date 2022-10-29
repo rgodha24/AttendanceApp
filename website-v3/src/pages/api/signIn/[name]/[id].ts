@@ -10,7 +10,8 @@ const handler: NextApiHandler<signInEvent | { error: string }> = async (req, res
   let personId: number;
   let scannerSecret: string;
   try {
-    scannerName = scannerNameSchema.parse(req.query.name);
+    // console.log(req.query.name);
+    scannerName = await scannerNameSchema.parseAsync(req.query.name);
   } catch {
     res.status(400).json({ error: "Invalid scanner name" });
     return;
@@ -43,7 +44,7 @@ const handler: NextApiHandler<signInEvent | { error: string }> = async (req, res
   const signIn: signInEvent = await prisma.signIn.create({
     data: {
       people: { connect: { id: personId } },
-      Scanner: { connect: { id: scanner.id, name: scannerName } },
+      Scanner: { connect: { id: scanner.id } },
     },
     include: {
       people: true,

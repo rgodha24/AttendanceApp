@@ -4,13 +4,16 @@ import { TRPCError } from "@trpc/server";
 import personSchema from "../../schemas/person";
 
 export const classRouter = createProtectedRouter()
-  .query("get-all-classes", {
+  .query("get-all-classes-by-user", {
     resolve: async ({ ctx }) => {
       return await ctx.prisma.class.findMany({
         where: {
           User: {
             id: ctx.session.user.id,
           },
+        },
+        select: {
+          name: true,
         },
       });
     },

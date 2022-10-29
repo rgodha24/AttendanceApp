@@ -1,6 +1,13 @@
 import { People } from "@prisma/client";
-import { useMemo } from "react";
-import { useTable, type Column } from "react-table";
+import {
+  createColumnHelper,
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  SortingState,
+  getSortedRowModel,
+} from "@tanstack/react-table";
+import { useState } from "react";
 
 /**
  *
@@ -8,62 +15,111 @@ import { useTable, type Column } from "react-table";
  * @returns a table with the people in props.people
  */
 const Table: React.FC<tableProps> = (props) => {
-  const tableInstance = useTable({
-    columns: props.columns,
-    data: props.people,
+  const columnHelper = createColumnHelper<OneTableUnit>();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  // console.log(sorting);
+  const columns = [
+    columnHelper.accessor("firstName", {
+      cell: (info) => info.getValue(),
+      header: "First Name",
+      // enableSorting: true,
+      // sortingFn: "text",
+    }),
+    columnHelper.accessor((row) => row.lastName, {
+      id: "lastName",
+      cell: (info) => info.getValue(),
+      header: "Last Name",
+      // enableSorting: true,
+      // sortingFn: "text",
+    }),
+    columnHelper.accessor("id", {
+      cell: (info) => info.getValue(),
+      header: "Student ID",
+      // sortingFn: "basic",
+      // enableSorting: true,
+    }),
+    columnHelper.accessor("timestamp", {
+      cell: (info) => info.getValue().toLocaleString(),
+      // sortingFn: "datetime",
+      // enableSorting: true,
+    }),
+  ];
+
+  const table = useReactTable<OneTableUnit>({
+    data: props.data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    debugAll: false,
+    getSortedRowModel: getSortedRowModel(),
   });
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
+  if (props.isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    // apply the table props
-    <table {...getTableProps()}>
-      <thead>
-        {
-          headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-              {
-                headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()} key={column.id}>
-                    {
-                      column.render("Header")
-                    }
-                  </th>
-                ))
-              }
+    <div className='p-2'>
+      <table className=' '>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} className='border border-gray-400'>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} className='border border-gray-400'>
+                  <div
+                    className={header.column.getCanSort() ? "cursor-pointer select" : ""}
+                    {...{
+                      onClick: header.column.getToggleSortingHandler(),
+                    }}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {{
+                      asc: " 🔼",
+                      desc: " 🔽",
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </div>
+                </th>
+              ))}
             </tr>
-          ))
-        }
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {
-          rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} key={row.id}>
-                {
-                  row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps()} key={cell.value}>
-                        {
-                          cell.render("Cell")
-                        }
-                      </td>
-                    );
-                  })
-                }
-              </tr>
-            );
-          })
-        }
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className='border border-slate-500'>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className=' border-r border-slate-500 '>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          {table.getFooterGroups().map((footerGroup) => (
+            <tr key={footerGroup.id}>
+              {footerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.footer, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </tfoot>
+      </table>
+      <div className='h-4' />
+    </div>
   );
 };
 
+type OneTableUnit = People & {
+  timestamp: Date;
+};
+
 interface tableProps {
-  people: People[];
-  columns: Column<People>[];
+  data: OneTableUnit[];
+  isLoading: boolean;
 }
 
 export default Table;

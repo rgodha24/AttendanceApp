@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "cockroachdb"
+    url      = env("DATABASE_URL")
 }
 
 model People {
-    id        Int      @id @default(autoincrement())
+    id        Int      @id @default(sequence())
     firstName String
     lastName  String
     Class     Class[]
@@ -19,7 +19,7 @@ model People {
 }
 
 model Class {
-    id     Int      @id @default(autoincrement())
+    id     Int      @id @default(sequence())
     name   String
     people People[]
     User   User     @relation(fields: [userId], references: [id])
@@ -27,7 +27,7 @@ model Class {
 }
 
 model SignIn {
-    id        Int      @id @default(autoincrement())
+    id        Int      @id @default(sequence())
     people    People   @relation(fields: [peopleId], references: [id])
     timestamp DateTime @default(now())
     Scanner   Scanner  @relation(fields: [scannerId], references: [id])
@@ -36,7 +36,7 @@ model SignIn {
 }
 
 model Scanner {
-    id             Int      @id @default(autoincrement())
+    id             Int      @id @default(sequence())
     name           String   @unique
     signIns        SignIn[]
     purgeEveryDays Int      @default(14)

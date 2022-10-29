@@ -1,22 +1,22 @@
-import pusher from "../pusherClient";
-import { useState } from "react";
+import { useState , useMemo} from "react";
 import { signInEvent } from "../../types/sign-in-event";
 
-const useSignIn = (channelName: string) => {
-  const [signIns, setSignIns] = useState<Array<signInEvent>>([]);
-  const channel = pusher.subscribe(channelName);
+import { useChannel, useEvent } from "@rgodha24/use-pusher";
 
-  channel.bind("sign-in", (data: signInEvent) => {
-    setSignIns((prev) => [...prev, data]);
+const useSignIn = (channelName: string) => {
+  const date = useMemo(() => new Date(), [])
+
+  const [signIns, setSignIns] = useState<Array<signInEvent>>([]);
+  const channel = useChannel(channelName);
+
+  useEvent<signInEvent>(channel, "sign-in", (dataOriginal) => {
+    if (dataOriginal !== undefined) {
+      const data = { ...dataOriginal, timestamp: new Date(dataOriginal.timestamp) };
+      setSignIns((prev) => [...prev, data]);
+    }
   });
 
-  return [
-    signIns,
-    () => {
-      channel.disconnect();
-      pusher.disconnect();
-    },
-  ] as const; 
+  return [signIns, date]as const;
 };
 
 export default useSignIn;

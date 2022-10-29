@@ -4,12 +4,18 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { prisma } from "../server/db/client";
 import { Scanner } from "@prisma/client";
+import Link from "next/link";
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (props) => {
   return (
     <>
       <Navbar />
-      Scanners: {((props.scanners || []).map((scanner) => <div key={scanner.id}>{scanner.name}</div>)) || <div>None</div>}
+      Scanners:{" "}
+      {(props.scanners || []).map((scanner) => (
+        <div key={scanner.id}>
+          <Link href={"/scanners/" + scanner.name}>{scanner.name}</Link>
+        </div>
+      )) || <div>None</div>}
     </>
   );
 };
