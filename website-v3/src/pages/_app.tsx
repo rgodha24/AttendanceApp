@@ -4,14 +4,9 @@ import type { AppRouter } from "../server/router";
 import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import { SessionProvider } from "next-auth/react";
-import withUsePusher from "../utils/withUsePusher";
 import "../styles/globals.css";
-import { env } from "../env/client.mjs";
 
-const MyApp: AppType = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
+const MyApp: AppType = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
       <Component {...pageProps} />
@@ -25,10 +20,7 @@ export const getBaseUrl = () => {
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
 
-export default withUsePusher({
-  clientKey: env.NEXT_PUBLIC_PUSHER_KEY,
-  cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
-})(withTRPC<AppRouter>({
+export default withTRPC<AppRouter>({
   config() {
     /**
      * If you want to use SSR, you need to use the server's full URL
@@ -49,4 +41,4 @@ export default withUsePusher({
    * @link https://trpc.io/docs/ssr
    */
   ssr: false,
-})(MyApp));
+})(MyApp);

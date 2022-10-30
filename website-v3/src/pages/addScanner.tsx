@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import Navbar from "../components/Navbar";
-import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
+import { Formik, Form, Field, ErrorMessage,  } from "formik";
 import scannerSchema from "../schemas/scanner";
 import { InferType } from "yup";
 import { unstable_getServerSession } from "next-auth";
@@ -42,7 +42,7 @@ const AddScanner: NextPage = () => {
               },
             });
           }}>
-          {({ isSubmitting, setValues, resetForm }) => (
+          {({ isSubmitting, setValues, resetForm, values }) => (
             <Form>
               <label htmlFor='name'>Scanner Name: </label>
               <Field type='text' name='name' />
@@ -75,11 +75,8 @@ const AddScanner: NextPage = () => {
               <br />
               {isSubmitting && <div>Submitting...</div>}
               {mutation.isError && <div>{mutation.error.message}</div>}
-              {mutation.isSuccess && (
-                <button onClick={() => resetForm()}>
-                  Success! Click Here to Reset the form 
-                </button>
-              )}
+              {mutation.isSuccess && <button onClick={() => resetForm()}>Success! Click Here to Reset the form</button>}
+              {JSON.stringify(values)}
             </Form>
           )}
         </Formik>

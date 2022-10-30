@@ -39,9 +39,14 @@ export default function Example() {
                   <div className='flex space-x-4'></div>
                 </div>
               </div>
-              <Link href='/addcourse' passHref>
+              <Link href='/addClass' passHref>
                 <a className='text-white  outline-white h-full justify-center text-center flex flex-col align-middle m-auto  '>
-                  <p className=' '>Add Class </p>
+                  <p className=' '>Add Class</p>
+                </a>
+              </Link>
+              <Link href='/addScanner' passHref>
+                <a className='text-white ml-4 outline-white h-full justify-center text-center flex flex-col align-middle m-auto  '>
+                  <p className=' '>Add Scanner</p>
                 </a>
               </Link>
               <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>

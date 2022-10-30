@@ -11,13 +11,15 @@ import { useState, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 import DatePicker from "../../components/DatePicker";
 import { useQueryClient } from "react-query";
+import withUsePusher from "../../utils/withUsePusher";
+import { env } from "../../env/client.mjs";
 
-const ScannerPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (props) => {
+const ScannerPageInner: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (props) => {
   const [signedInRT, date] = useSignIn("scanner-" + props.scanner.name);
   const [mode, setMode] = useState<"realtime" | "date-to-realtime" | "date-to-date">("realtime");
   const [startDate, setStartDate] = useState(dayjs().subtract(1, "hour"));
   const [endDate, setEndDate] = useState(dayjs(date));
-  const [selectedClass, setSelectedClass] = useState<string>();
+  const [selectedClass, setSelectedClass] = useState<number>();
   const queryClient = useQueryClient();
 
   const classes = trpc.useQuery(["class.get-all-classes-by-user"]);
@@ -58,14 +60,21 @@ const ScannerPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (p
     <div>
       {/* <h1>Scanner Page</h1> */}
       Choose a class: {classes.isLoading && "Loading..."}
-      {classes.isError && "Error"}
+      {classes.isError && (
+        <button
+          onClick={() => {
+            queryClient.invalidateQueries(["signIn.all-signins-by-date"]);
+          }}>
+          Error. Click here to retry
+        </button>
+      )}
       {classes.isSuccess &&
         (classes.data.length === 0 ? (
           <Link href='/addCourse'>{"You don't have any classes. Click here to make one."}</Link>
         ) : (
           <Select
             options={classes.data.map((a) => {
-              return { value: a.name, label: a.name };
+              return { value: a.id, label: a.name };
             })}
             onChange={(value) => {
               setSelectedClass(value?.value);
@@ -83,7 +92,7 @@ const ScannerPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (p
         onChange={(value) => {
           if (value !== null) {
             setMode(value.value);
-            if (value?.value !== "date-to-date") {
+            if (value.value !== "date-to-date") {
               setEndDate(dayjs(date));
             }
           }
@@ -143,5 +152,10 @@ const getStaticProps: GetStaticProps<{ scanner: Scanner }> = async (context) => 
     };
   }
 };
+
+const ScannerPage = withUsePusher({
+  clientKey: env.NEXT_PUBLIC_PUSHER_KEY,
+  cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
+})(ScannerPageInner);
 
 export { ScannerPage as default, getStaticPaths, getStaticProps };

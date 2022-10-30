@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { PusherProvider } from "@rgodha24/use-pusher";
-import { NextComponentType, NextPageContext } from "next";
+import { NextComponentType,  } from "next";
 import { AppPropsType } from "next/dist/shared/lib/utils";
 import { NextRouter } from "next/router";
 

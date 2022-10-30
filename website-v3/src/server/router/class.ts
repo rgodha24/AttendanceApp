@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createProtectedRouter } from "./protected-router";
 import { TRPCError } from "@trpc/server";
-import personSchema from "../../schemas/person";
 
 export const classRouter = createProtectedRouter()
   .query("get-all-classes-by-user", {
@@ -14,15 +13,16 @@ export const classRouter = createProtectedRouter()
         },
         select: {
           name: true,
+          id: true,
         },
       });
     },
   })
   .mutation("create-class", {
     input: z.object({
-      id: z.number().optional(),
       name: z.string(),
-      people: z.array(personSchema),
+      id: z.number().optional(),
+      people: z.array(z.number()),
     }),
     resolve: async ({ ctx, input }) => {
       return await ctx.prisma.class.create({
@@ -34,7 +34,7 @@ export const classRouter = createProtectedRouter()
             },
           },
           people: {
-            connectOrCreate: input.people.map((person) => ({ where: { id: person.id }, create: { ...person } })),
+            connect: input.people.map((id) => ({ id })),
           },
         },
         include: { people: true },
@@ -79,7 +79,7 @@ export const classRouter = createProtectedRouter()
   .mutation("add-person", {
     input: z.object({
       classId: z.number(),
-      person: personSchema,
+      personId: z.number(),
     }),
     resolve: async ({ input, ctx }) => {
       const usersClasses = await ctx.prisma.class.findMany({
@@ -103,13 +103,8 @@ export const classRouter = createProtectedRouter()
         },
         data: {
           people: {
-            connectOrCreate: {
-              where: {
-                id: input.person.id,
-              },
-              create: {
-                ...input.person,
-              },
+            connect: {
+              id: input.personId,
             },
           },
         },
