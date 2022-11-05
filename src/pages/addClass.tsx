@@ -205,7 +205,6 @@ const AddClass: NextPage<
                         type="submit"
                         disabled={isSubmitting}
                         className="bg-red-500 text-2xl p-2 mt-4"
-                        onClick={() => submitForm()}
                      >
                         Submit
                      </button>
