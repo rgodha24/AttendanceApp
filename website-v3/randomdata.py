@@ -9,10 +9,9 @@ scannerSecret = "gtq7yq"
 
 
 while True:
-    url = f"http://localhost:3000/api/signIn/{urllib.parse.quote(scannerName)}/{random.randint(20,24)*1000 + random.randint(1,300)}?secret={scannerSecret}"
+    url = f"http://localhost:3000/api/signIn/{urllib.parse.quote(scannerName)}/{20000+ random.randint(1,19)}?secret={scannerSecret}"
     print("posting data\n", url)
-    r =  requests.post(
-        f"http://localhost:3000/api/signIn/{urllib.parse.quote(scannerName)}/{random.randint(20,24)*1000 + random.randint(1,300)}?secret={scannerSecret}", )
+    r = requests.post(url)
     # print(r.text)
-    
+
     time.sleep(1)

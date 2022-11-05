@@ -21,7 +21,8 @@ export const scannerRouter = createProtectedRouter()
       if (scanner !== null) {
         return new TRPCError({ code: "BAD_REQUEST", message: "scanner name is already taken" });
       }
-      return await ctx.prisma.scanner.create({
+
+      const data = await ctx.prisma.scanner.create({
         data: {
           name: input.name,
           purgeEveryDays: input.purgeEveryDays,
@@ -33,6 +34,10 @@ export const scannerRouter = createProtectedRouter()
           },
         },
       });
+
+      await Promise.all([ctx.revalidate("/"), ctx.revalidate(`/scanners/${input.name}`)]);
+
+      return data;
       //   console.table(answer);
       //   return answer;
     },

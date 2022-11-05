@@ -9,6 +9,7 @@ import { trpc } from "../utils/trpc";
 import { getBaseUrl } from "./_app";
 import { useQueryClient } from "react-query";
 
+
 type FormValues = Pick<InferType<typeof scannerSchema>, "name" | "scannerSecret" | "purgeEveryDays">; // idk why but this return type is messed up if i dont do this
 
 const AddScanner: NextPage = () => {

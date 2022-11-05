@@ -5,7 +5,6 @@ import superjson from "superjson";
 import { protectedExampleRouter } from "./protected-example-router";
 import { signInRouter } from "./signIn";
 import { classRouter } from "./class";
-import { peopleRouter } from "./people";
 import { miscRouter } from "./misc";
 import { scannerRouter } from "./scanner";
 
@@ -14,7 +13,6 @@ export const appRouter = createRouter()
   .merge("question.", protectedExampleRouter)
   .merge("signIn.", signInRouter)
   .merge("class.", classRouter)
-  .merge("people.", peopleRouter)
   .merge("misc.", miscRouter)
   .merge("scanner.", scannerRouter)
   .query("hello", {

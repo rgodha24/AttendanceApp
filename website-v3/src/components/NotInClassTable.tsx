@@ -1,4 +1,3 @@
-import { People } from "@prisma/client";
 import {
   createColumnHelper,
   useReactTable,
@@ -21,19 +20,6 @@ const Table: React.FC<tableProps> = (props) => {
   const [animateParent] = useAutoAnimate();
   // console.log(sorting);
   const columns = [
-    columnHelper.accessor("firstName", {
-      cell: (info) => info.getValue(),
-      header: "First Name",
-      // enableSorting: true,
-      // sortingFn: "text",
-    }),
-    columnHelper.accessor((row) => row.lastName, {
-      id: "lastName",
-      cell: (info) => info.getValue(),
-      header: "Last Name",
-      // enableSorting: true,
-      // sortingFn: "text",
-    }),
     columnHelper.accessor("studentId", {
       cell: (info) => info.getValue(),
       header: "Student ID",
@@ -42,8 +28,7 @@ const Table: React.FC<tableProps> = (props) => {
     }),
     columnHelper.accessor("timestamp", {
       cell: (info) => info.getValue().toLocaleString(),
-      // sortingFn: "datetime",
-      // enableSorting: true,
+      header: "Date",
     }),
   ];
 
@@ -89,11 +74,9 @@ const Table: React.FC<tableProps> = (props) => {
         </thead>
         <tbody ref={animateParent as LegacyRef<HTMLTableSectionElement>}>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} >
+            <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}
             </tr>
           ))}
@@ -115,9 +98,7 @@ const Table: React.FC<tableProps> = (props) => {
   );
 };
 
-type OneTableUnit = People & {
-  timestamp: Date;
-};
+type OneTableUnit = { studentId: number; timestamp: Date };
 
 type tableProps = {
   data: OneTableUnit[];

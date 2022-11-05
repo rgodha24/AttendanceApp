@@ -22,28 +22,44 @@ export const classRouter = createProtectedRouter()
     input: z.object({
       name: z.string(),
       id: z.number().optional(),
-      people: z.array(z.number()),
+      people: z.array(
+        z.object({
+          studentId: z.number(),
+          firstName: z.string(),
+          lastName: z.string(),
+        })
+      ),
     }),
     resolve: async ({ ctx, input }) => {
-      return await ctx.prisma.class.create({
-        data: {
-          name: input.name,
-          User: {
-            connect: {
-              id: ctx.session.user.id,
+      const answer = await ctx.prisma.class
+        .create({
+          data: {
+            name: input.name,
+            User: {
+              connect: {
+                id: ctx.session.user.id,
+              },
+            },
+            people: {
+              create: input.people,
             },
           },
-          people: {
-            connect: input.people.map((id) => ({ id })),
-          },
-        },
-        include: { people: true },
-      });
+          include: { people: true },
+        })
+        .catch(console.log);
+
+      if (!answer) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create class",
+        });
+      }
+      return answer;
     },
   })
   .mutation("remove-person", {
     input: z.object({
-      personId: z.number(),
+      personId: z.string(),
       classId: z.number(),
     }),
     resolve: async ({ input, ctx }) => {
@@ -79,7 +95,11 @@ export const classRouter = createProtectedRouter()
   .mutation("add-person", {
     input: z.object({
       classId: z.number(),
-      personId: z.number(),
+      person: z.object({
+        studentId: z.number(),
+        firstName: z.string(),
+        lastName: z.string(),
+      }),
     }),
     resolve: async ({ input, ctx }) => {
       const usersClasses = await ctx.prisma.class.findMany({
@@ -103,11 +123,52 @@ export const classRouter = createProtectedRouter()
         },
         data: {
           people: {
-            connect: {
-              id: input.personId,
+            create: input.person,
+          },
+        },
+      });
+    },
+  })
+  .query("get-people-by-class", {
+    input: z.object({
+      classId: z.number().int(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+      const classItem = await ctx.prisma.class.findUnique({
+        where: {
+          id: input.classId,
+        },
+      });
+
+      if (!classItem) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        });
+      }
+
+      if (classItem.userId !== ctx.session.user.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const data = await ctx.prisma.people.findMany({
+        where: {
+          Class: {
+            every: {
+              id: classItem.id,
             },
           },
         },
       });
+
+      return new Map(data.map((item) => [item.studentId, item] as const));
     },
   });

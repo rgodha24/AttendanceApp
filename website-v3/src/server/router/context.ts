@@ -10,6 +10,7 @@ import { prisma } from "../db/client";
 
 type CreateContextOptions = {
   session: Session | null;
+  revalidate: trpcNext.CreateNextContextOptions["res"]["revalidate"]
 };
 
 /** Use this helper for:
@@ -19,6 +20,7 @@ type CreateContextOptions = {
 export const createContextInner = async (opts: CreateContextOptions) => {
   return {
     session: opts.session,
+    revalidate: opts.revalidate,
     prisma,
   };
 };
@@ -34,6 +36,7 @@ export const createContext = async (
 
   return await createContextInner({
     session,
+    revalidate: opts.res.revalidate,
   });
 };
 

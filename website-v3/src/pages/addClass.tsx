@@ -2,32 +2,55 @@ import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import Navbar from "../components/Navbar";
 import { trpc } from "../utils/trpc";
 import * as Yup from "yup";
-import useClassStore from "../utils/hooks/useClassStore";
+import { unstable_getServerSession } from "next-auth";
+import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from "next";
+import { authOptions } from "./api/auth/[...nextauth]";
+import { getBaseUrl } from "./_app";
+import { prisma } from "../server/db/client";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import Link from "next/link";
+import { LegacyRef } from "react";
 
 type FormValues = {
   name: string;
-  people: number[];
+  people: { studentId: number; firstName: string; lastName: string }[];
 };
 
-const schema = Yup.object({
-  name: Yup.string().required(),
-  people: Yup.array(Yup.number().required()),
-});
-
-export default function AddClass() {
+const AddClass: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (props) => {
   const mutation = trpc.useMutation("class.create-class");
-  const allClasses = trpc.useQuery(["class.get-all-classes-by-user"]);
-  const classStore = useClassStore();
+  const allClasses = trpc.useQuery(["class.get-all-classes-by-user"], {
+    initialData: props.classes,
+  });
+  const [animationParent] = useAutoAnimate();
+
+  const schema = Yup.object({
+    name: Yup.string()
+      .notOneOf(allClasses.data?.map((a) => a.name) || [""], "You have already used this class name")
+      .required("class name is required"),
+    people: Yup.array(
+      Yup.object({
+        studentId: Yup.number().required(),
+        firstName: Yup.string().required(),
+        lastName: Yup.string().required(),
+      })
+    ).required(),
+  });
 
   const initialValues: FormValues = {
-    name: "className",
-    people: [0],
+    name: "className" + randomNumber(0, 1000),
+    people: [
+      {
+        studentId: 0,
+        firstName: "firstName",
+        lastName: "lastName",
+      },
+    ],
   };
-  function randomStudentId(array: number[]): number {
-    function randomNumber(min: number, max: number) {
-      return Math.floor(Math.random() * (max - min) + min);
-    }
+  function randomNumber(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min) + min);
+  }
 
+  function randomStudentId(array: number[]): number {
     const number = randomNumber(20, 24) * 1000 + randomNumber(0, 300);
 
     if (array.includes(number)) {
@@ -66,70 +89,53 @@ export default function AddClass() {
               <br className='mt-2' />
               <FieldArray name='people'>
                 {({ remove, push }) => (
-                  <>
-                    {values.people.map((person, index) => {
-                      const InputComponent = () => {
+                  <div>
+                    <ul ref={animationParent as LegacyRef<HTMLUListElement>}>
+                      {values.people.map((person, index, array) => {
+                        if (index !== array.map((a) => a.studentId).indexOf(person.studentId)) {
+                          console.log("detected duplicate");
+
+                          setErrors({
+                            people: `Student with id ${person.studentId} is duplicated`,
+                          });
+                        }
+
                         return (
-                          <>
-                            <label htmlFor={`people.${index}`} className='mr-4'>
+                          <li key={index}>
+                            <label htmlFor={`people.${index}.studentId`} className='mr-4'>
                               Student Id:
                             </label>
-                            <Field name={`people.${index}`} type='number' />
-                            <ErrorMessage name={`people.${index}`} className='text-red-500' />
+                            <Field name={`people.${index}.studentId`} type='number' />
+                            <ErrorMessage name={`people.${index}.studentId`} className='text-red-500' />
+                            <label htmlFor={`people.${index}.firstName`}>First Name: </label>
+                            <Field name={`people.${index}.firstName`} type='text' />
+                            <ErrorMessage name={`people.${index}.firstName`} className='text-red-500' />
+                            <label htmlFor={`people.${index}.lastName`}>Last Name: </label>
+                            <Field name={`people.${index}.lastName`} type='text' />
+                            <ErrorMessage name={`people.${index}.lastName`} className='text-red-500' />
                             <button className='p-4' onClick={() => remove(index)}>
                               Remove
                             </button>
-                          </>
+                          </li>
                         );
-                      };
-                      if (!classStore.map.has(person)) {
-                        return (
-                          <div key={person}>
-                            <InputComponent />
-                            <p>
-                              This person{"'"}s info is not currently downloaded.
-                              <button type='button' onClick={() => classStore.addId(person)}>
-                                Click here to download it
-                              </button>
-                            </p>
-                          </div>
-                        );
-                      } else {
-                        // we can assert this is non null because this code only runs if classStore.map.has(person) is true
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        const data = classStore.map.get(person)!;
-
-                        if (data.exists) {
-                          return (
-                            <div key={person}>
-                              <InputComponent />
-                              <div>
-                                First Name: {data.firstName}, Last Name: {data.lastName}
-                              </div>
-                            </div>
-                          );
-                        } else {
-                          setErrors({ people: "at least one student doesn't exist" });
-                          return (
-                            <div key={person}>
-                              <InputComponent />
-                              <div>This student does not exist in our database</div>
-                            </div>
-                          );
-                        }
-                      }
-                    })}
+                      })}
+                    </ul>
                     <button
                       type='button'
                       onClick={() => {
                         console.log("adding a student");
-                        push(randomStudentId(values.people));
+                        push({
+                          studentId: randomStudentId(values.people.map((a) => a.studentId)),
+                          firstName: "firstName",
+                          lastName: "lastName",
+                        });
                       }}>
                       Add Student
                     </button>
-                  </>
+                  </div>
                 )}
               </FieldArray>
+              <ErrorMessage name='people' className='text-red-500' />
               <br />
               <button
                 type='submit'
@@ -138,19 +144,6 @@ export default function AddClass() {
                 onClick={() => submitForm()}>
                 Submit
               </button>
-              <br />
-              <button
-                type='button'
-                onClick={() => {
-                  const ids: number[] = [];
-                  for (const x of classStore.map.keys()) {
-                    ids.push(x);
-                  }
-                  classStore.getIds(ids);
-                }}>
-                Refetch all data about students
-              </button>
-              {classStore.isFetching && <div>Fetching data about students...</div>}
               <br />
               {isSubmitting && <div>Submitting...</div>}
               {/* {JSON.stringify(values)} */}
@@ -172,10 +165,47 @@ export default function AddClass() {
             Error: {allClasses.error.message}. click here to try again{" "}
           </button>
         )}
-        {allClasses.isSuccess && allClasses.data.map((c) => <div key={c.id}>{c.name}</div>)}
+        {allClasses.isSuccess &&
+          allClasses.data.map((c) => (
+            <Link key={c.id} href={`/class/${c.id}`} passHref>
+              <a>
+                <p>{c.name}</p>
+              </a>
+            </Link>
+          ))}
+        <br />
         <button onClick={() => allClasses.refetch()}>click here to refetch this data</button>
         {allClasses.isRefetching && <div>Refetching...</div>}
       </div>
     </>
   );
-}
+};
+
+const getServerSideProps: GetServerSideProps<{ classes: { id: number; name: string }[] }> = async (context) => {
+  const session = await unstable_getServerSession(context.req, context.res, authOptions);
+
+  if (session === null || session.user === undefined) {
+    return {
+      redirect: {
+        destination: getBaseUrl() + "/api/auth/signin?callbackUrl=%2FaddClass",
+        permanent: false,
+      },
+    };
+  } else {
+    return {
+      props: {
+        classes: await prisma.class.findMany({
+          where: {
+            userId: session.user.id,
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        }),
+      },
+    };
+  }
+};
+export { getServerSideProps };
+export default AddClass;

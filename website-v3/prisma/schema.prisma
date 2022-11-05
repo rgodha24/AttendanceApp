@@ -11,11 +11,11 @@ datasource db {
 }
 
 model People {
-    id        Int      @id @default(sequence())
+    id        String  @id @default(uuid())
     firstName String
     lastName  String
+    studentId Int
     Class     Class[]
-    signIns   SignIn[]
 }
 
 model Class {
@@ -28,11 +28,10 @@ model Class {
 
 model SignIn {
     id        Int      @id @default(sequence())
-    people    People   @relation(fields: [peopleId], references: [id])
+    studentId Int
     timestamp DateTime @default(now())
     Scanner   Scanner  @relation(fields: [scannerId], references: [id])
     scannerId Int
-    peopleId  Int
 }
 
 model Scanner {

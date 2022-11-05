@@ -2,12 +2,12 @@ import { NextApiHandler } from "next";
 import { z } from "zod";
 import scannerNameSchema from "../../../../schemas/scannerName";
 import { prisma } from "../../../../server/db/client";
-import { signInEvent } from "../../../../types/sign-in-event";
+import { SignIn } from "@prisma/client";
 import pusher from "../../../../utils/pusherServer";
 
-const handler: NextApiHandler<signInEvent | { error: string }> = async (req, res) => {
+const handler: NextApiHandler<SignIn | { error: string }> = async (req, res) => {
   let scannerName: string;
-  let personId: number;
+  let studentId: number;
   let scannerSecret: string;
   try {
     // console.log(req.query.name);
@@ -17,7 +17,7 @@ const handler: NextApiHandler<signInEvent | { error: string }> = async (req, res
     return;
   }
   try {
-    personId = z.number().parse(Number(req.query.id));
+    studentId = z.number().parse(Number(req.query.id));
   } catch {
     res.status(400).json({ error: "Invalid person id" });
     return;
@@ -37,18 +37,10 @@ const handler: NextApiHandler<signInEvent | { error: string }> = async (req, res
     res.status(400).json({ error: "wrong secret" });
   }
 
-  const person = await prisma.people.findUnique({ where: { id: personId } });
-  if (person === null) {
-    personId = 0;
-  }
-  const signIn: signInEvent = await prisma.signIn.create({
+  const signIn = await prisma.signIn.create({
     data: {
-      people: { connect: { id: personId } },
       Scanner: { connect: { id: scanner.id } },
-    },
-    include: {
-      people: true,
-      Scanner: true,
+      studentId,
     },
   });
 

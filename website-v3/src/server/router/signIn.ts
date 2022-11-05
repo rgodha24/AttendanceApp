@@ -1,6 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
-import type { signInEvent } from "../../types/sign-in-event";
+import type { SignIn } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const signInRouter = createRouter().query("all-signins-by-date", {
@@ -17,22 +17,23 @@ export const signInRouter = createRouter().query("all-signins-by-date", {
     if (scanner === null) {
       return new TRPCError({ code: "BAD_REQUEST", message: "Scanner not found" });
     }
-    const answer: signInEvent[] = (await ctx.prisma.signIn.findMany({
-      where: {
-        Scanner: {
-          name: input.scannerName,
+    const answer: SignIn[] = (
+      await ctx.prisma.signIn.findMany({
+        where: {
+          Scanner: {
+            name: input.scannerName,
+          },
+          timestamp: {
+            gte: new Date(input.startDate.toISOString()),
+            lte: new Date(input.endDate.toISOString()),
+            // lte: input.startDate,
+            // gte: input.endDate,
+          },
         },
-        timestamp: {
-          gte: new Date(input.startDate.toISOString()),
-          lte: new Date(input.endDate.toISOString()),
-          // lte: input.startDate,
-          // gte: input.endDate,
-        },
-      },
-      include: {
-        people: true,
-      },
-    })).map(a => {return {...a, Scanner: scanner}});
+      })
+    ).map((a) => {
+      return { ...a, Scanner: scanner };
+    });
     // console.log("length of signIn.all-signins-by-date: ", answer.length);
     return answer;
   },
