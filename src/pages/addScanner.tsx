@@ -98,7 +98,7 @@ const AddScanner: NextPage = () => {
                      </button>
                      <br />
                      {isSubmitting && <div>Submitting...</div>}
-                     {mutation.isError && <div>{mutation.error.message}</div>}
+                     {mutation.isError && <div>Error: {mutation.error.message}</div>}
                      {mutation.isSuccess && (
                         <button onClick={() => resetForm()}>
                            Success! Click Here to Reset the form
