@@ -1,5 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { LegacyRef } from "react";
+import { LegacyRef, useTransition } from "react";
 import {
    Control,
    FieldErrorsImpl,
@@ -25,6 +25,7 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
       name: "people",
    });
    const [animationParent] = useAutoAnimate();
+   const [isTransitioning, transition] = useTransition();
 
    return (
       <div>
@@ -101,20 +102,25 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
          </ul>
          <button
             type="button"
+            disabled={isTransitioning}
             onClick={() =>
-               append({
-                  studentId: 0,
-                  lastName: "",
-                  firstName: "",
-               })
+               transition(() =>
+                  append({
+                     studentId: 0,
+                     lastName: "",
+                     firstName: "",
+                  })
+               )
             }
          >
             Add Student
          </button>
-         <AddClassFileInput {...{append}}/> 
+         {isTransitioning && <p>Loading file addition...</p>}
+         <AddClassFileInput {...{ append }} />
          {errors.people?.message && (
             <p className="text-red-500">{errors.people.message}</p>
          )}
+         {JSON.stringify(errors)}
       </div>
    );
 };
