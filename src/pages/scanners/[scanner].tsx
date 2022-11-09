@@ -197,9 +197,9 @@ const ScannerPageInner: NextPage<
                            return people.data.has(value.studentId);
                         })
                         .map((value) => {
-                           // we can assert non null here b/c we just filtered out all studentIds that are not in the map
-                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                            return {
+                              // we can assert non null here b/c we just filtered out all studentIds that are not in the map
+                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                               ...people.data.get(value.studentId)!,
                               timestamp: value.timestamp,
                            };

@@ -7,8 +7,8 @@ import {
    SortingState,
    getSortedRowModel,
 } from "@tanstack/react-table";
-import { LegacyRef, useState } from "react";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import {  useState } from "react";
+
 
 /**
  *
@@ -18,7 +18,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 const Table: React.FC<tableProps> = (props) => {
    const columnHelper = createColumnHelper<OneTableUnit>();
    const [sorting, setSorting] = useState<SortingState>([]);
-   const [animateParent] = useAutoAnimate();
+
    // console.log(sorting);
    const columns = [
       columnHelper.accessor("firstName", {
@@ -98,7 +98,7 @@ const Table: React.FC<tableProps> = (props) => {
                   </tr>
                ))}
             </thead>
-            <tbody ref={animateParent as LegacyRef<HTMLTableSectionElement>}>
+            <tbody >
                {table.getRowModel().rows.map((row) => (
                   <tr key={row.id}>
                      {row.getVisibleCells().map((cell) => (

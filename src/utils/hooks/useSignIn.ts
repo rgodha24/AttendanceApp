@@ -4,9 +4,12 @@ import { SignIn } from "@prisma/client";
 import { useChannel, useEvent } from "@rgodha24/use-pusher";
 
 const useSignIn = (channelName: string) => {
-   const date = useMemo(() => new Date(), []);
+   
 
    const [signIns, setSignIns] = useState<Array<SignIn>>([]);
+   const [dateState, setDateState] = useState(1);
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   const date = useMemo(() => new Date(), [dateState]);
    const channel = useChannel(channelName);
 
    useEvent<SignIn>(channel, "sign-in", (dataOriginal) => {
@@ -19,7 +22,12 @@ const useSignIn = (channelName: string) => {
       }
    });
 
-   return [signIns, date] as const;
+   const reset = () => {
+      setSignIns([]);
+      setDateState((a) => a + 1);
+   };
+
+   return [signIns, date, reset] as const;
 };
 
 export default useSignIn;

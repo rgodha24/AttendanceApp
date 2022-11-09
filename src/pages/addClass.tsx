@@ -43,7 +43,7 @@ const AddClassNew: NextPage<
       formState: { errors, isSubmitting, isValidating, isValid },
       reset,
    } = useForm<FormValues>({
-      resolver: zodResolver(schema, {}),
+      resolver: zodResolver(schema),
       reValidateMode: "onChange",
    });
 
@@ -81,7 +81,9 @@ const AddClassNew: NextPage<
                      Submit
                   </button>
                ) : (
-                  <p>Form is not valid, can not submit</p>
+                  <p className="text-red-500">
+                     Form is not valid, can not submit
+                  </p>
                )}
                {mutation.isSuccess && (
                   <div>
@@ -92,7 +94,6 @@ const AddClassNew: NextPage<
                   </div>
                )}
                {mutation.isError && <p>There was an error submitting</p>}
-               {/* {JSON.stringify(errors)} */}
             </form>
          </div>
          <div>
