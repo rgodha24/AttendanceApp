@@ -12,9 +12,10 @@ import Navbar from "../components/Navbar";
 import { trpc } from "../utils/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Link from "next/link";
 import peopleClassSchema from "../schemas/peopleClassSchema";
 import AddClassFieldArray from "../components/addClass/FieldArray";
+import ClassList from "../components/classList/index";
+import { useQueryClient } from "react-query";
 
 const AddClassNew: NextPage<
    InferGetServerSidePropsType<typeof getServerSideProps>
@@ -23,6 +24,7 @@ const AddClassNew: NextPage<
    const allClasses = trpc.useQuery(["class.get-all-classes-by-user"], {
       initialData: props.classes,
    });
+   const queryClient = useQueryClient();
 
    const schema = z.object({
       name: z.string().refine(
@@ -54,7 +56,9 @@ const AddClassNew: NextPage<
             <form
                onSubmit={handleSubmit(async (data) => {
                   await mutation.mutateAsync(data);
-                  allClasses.refetch();
+                  queryClient.invalidateQueries([
+                     "class.get-all-classes-by-user",
+                  ]);
                })}
             >
                <div>
@@ -88,7 +92,13 @@ const AddClassNew: NextPage<
                {mutation.isSuccess && (
                   <div>
                      <p>Submitted Successfully</p>
-                     <button type="reset" onClick={() => reset()}>
+                     <button
+                        type="reset"
+                        onClick={() => {
+                           reset();
+                           mutation.reset();
+                        }}
+                     >
                         Click here to reset the form
                      </button>
                   </div>
@@ -96,28 +106,7 @@ const AddClassNew: NextPage<
                {mutation.isError && <p>There was an error submitting</p>}
             </form>
          </div>
-         <div>
-            All User Classes:
-            {allClasses.isLoading && <div>Loading...</div>}
-            {allClasses.isError && (
-               <button onClick={() => allClasses.refetch()}>
-                  Error: {allClasses.error.message}. click here to try again{" "}
-               </button>
-            )}
-            {allClasses.isSuccess &&
-               allClasses.data.map((c) => (
-                  <Link key={c.id} href={`/class/${c.id}`} passHref>
-                     <a>
-                        <p>{c.name}</p>
-                     </a>
-                  </Link>
-               ))}
-            <br />
-            <button onClick={() => allClasses.refetch()}>
-               click here to refetch this data
-            </button>
-            {allClasses.isRefetching && <div>Refetching...</div>}
-         </div>
+         <ClassList classes={props.classes} />
       </div>
    );
 };

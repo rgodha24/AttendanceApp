@@ -175,4 +175,31 @@ export const classRouter = createProtectedRouter()
 
          return new Map(data.map((item) => [item.studentId, item] as const));
       },
+   })
+   .mutation("delete-class", {
+      input: z.object({
+         id: z.number(),
+      }),
+      async resolve({ ctx, input }) {
+         const userClasses = await ctx.prisma.class.findMany({
+            where: {
+               User: {
+                  id: ctx.session.user.id,
+               },
+            },
+            select: {
+               id: true,
+            },
+         });
+
+         if (!userClasses.some((classItem) => classItem.id === input.id)) {
+            throw new TRPCError({ code: "UNAUTHORIZED" });
+         }
+
+         return await ctx.prisma.class.delete({
+            where: {
+               id: input.id,
+            },
+         });
+      },
    });
