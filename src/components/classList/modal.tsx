@@ -12,7 +12,8 @@ const DeleteModal: React.FC<DeleteModalProps> = (props) => {
          onClose={() => props.setShow(false)}
          className=" relative z-50 "
       >
-         <div className="fixed inset-0 flex justify-center p-4  dark:text-palette-white dark:bg-palette-black text-palette-black bg-palette-white">
+         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+         <div className="fixed inset-0 flex justify-center p-4  text-palette-white">
             <Dialog.Panel className="w-full ">
                <Dialog.Title className="flex justify-center items-center m-auto w-full ">
                   <h2 className="text-4xl ">Delete Class {props.className}?</h2>
@@ -25,15 +26,32 @@ const DeleteModal: React.FC<DeleteModalProps> = (props) => {
                </Dialog.Description>
                <button
                   className="flex justify-center items-center m-auto p-4 text-xl mt-4 h-10 bg-palette-blue"
-                  onClick={async () => {
-                     await mutation.mutateAsync({ id: props.classId });
-                     queryClient.invalidateQueries([
-                        "class.get-all-classes-by-user",
-                     ]);
+                  type="button"
+                  onClick={async (e) => {
+                     e.preventDefault();
+                     mutation.mutate(
+                        { id: props.classId },
+                        {
+                           onSettled: () =>
+                              queryClient.invalidateQueries([
+                                 "class.get-all-classes-by-user",
+                              ]),
+                        }
+                     );
                   }}
                >
-                  <p className=" ">Delete {props.className}</p>
+                  Delete {props.className}
                </button>
+               <button
+                  className="flex justify-center items-center m-auto p-4 text-xl mt-4 h-10 bg-palette-crimson"
+                  type="button"
+                  onClick={async () => props.setShow(false)}
+               >
+                  Close
+               </button>
+               {mutation.isLoading && (
+                  <p className="text-palette-crimson">Deleting...</p>
+               )}
             </Dialog.Panel>
          </div>
       </Dialog>
