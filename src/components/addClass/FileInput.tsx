@@ -1,4 +1,4 @@
-import peopleClassSchema from "../schemas/peopleClassSchema";
+import peopleClassSchema from "../../schemas/peopleClassSchema";
 import Papa from "papaparse";
 import { z } from "zod";
 import { createRef } from "react";

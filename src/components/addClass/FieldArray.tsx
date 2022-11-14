@@ -6,8 +6,8 @@ import {
    useFieldArray,
    UseFormRegister,
 } from "react-hook-form";
-import type { FormValues } from "./AddClassFileInput";
-import AddClassFileInput from "./AddClassFileInput";
+import type { FormValues } from "./FileInput";
+import AddClassFileInput from "./FileInput";
 
 interface AddClassFieldArrayProps {
    control: Control<FormValues>;
@@ -116,7 +116,7 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
             Add Student
          </button>
          <button
-         className="ml-4"
+            className="ml-4"
             onClick={() => {
                remove(fields.map((_, index) => index));
             }}
@@ -128,7 +128,6 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
          {errors.people?.message && (
             <p className="text-red-500">{errors.people.message}</p>
          )}
-
       </div>
    );
 };

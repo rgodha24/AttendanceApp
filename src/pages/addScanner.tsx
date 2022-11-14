@@ -31,7 +31,7 @@ const AddScanner: NextPage = () => {
 
    return (
       <>
-         <Navbar />
+         <Navbar title="Add Scanner"/>
          <br />
          <div>
             <Formik

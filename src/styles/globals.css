@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+   @apply dark:text-palette-white dark:bg-palette-black text-palette-black bg-palette-white;
+}
+
+input {
+   @apply dark:text-palette-white dark:bg-palette-black text-palette-black bg-palette-white border dark:border-palette-white border-palette-black;
+}

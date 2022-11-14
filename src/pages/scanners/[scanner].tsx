@@ -9,17 +9,15 @@ import type { Scanner } from "@prisma/client";
 import scannerNameSchema from "../../schemas/scannerName";
 import useSignIn from "../../utils/hooks/useSignIn";
 import { trpc } from "../../utils/trpc";
-import Table from "../../components/Table";
-import Select from "react-select";
-import Link from "next/link";
+import AllTables from "../../components/[scanner]/tables/all";
 import { useState, useMemo } from "react";
 import dayjs from "dayjs";
-import DatePicker from "../../components/DatePicker";
-import { useQueryClient } from "react-query";
+import AllDates from "../../components/date/all";
 import withUsePusher from "../../utils/withUsePusher";
 import Navbar from "../../components/Navbar";
 import { env } from "../../env/client.mjs";
-import NotInClassTable from "../../components/NotInClassTable";
+import ClassChooser from "../../components/[scanner]/ClassChooser";
+import ModeChooser from "../../components/[scanner]/ModeChooser";
 
 const ScannerPageInner: NextPage<
    InferGetStaticPropsType<typeof getStaticProps>
@@ -31,9 +29,7 @@ const ScannerPageInner: NextPage<
    const [startDate, setStartDate] = useState(dayjs().subtract(1, "hour"));
    const [endDate, setEndDate] = useState(dayjs(date));
    const [selectedClass, setSelectedClass] = useState<number>();
-   const queryClient = useQueryClient();
 
-   const classes = trpc.useQuery(["class.get-all-classes-by-user"]);
    const people = trpc.useQuery([
       "class.get-people-by-class",
       {
@@ -60,167 +56,40 @@ const ScannerPageInner: NextPage<
       }
    }, [signedInRT, signedInD.isSuccess, signedInD.data, mode]);
 
-   if (selectedClass === undefined) {
-      return (
-         <>
-            <Navbar></Navbar>
-            Choose a class before continuing:{" "}
-            {classes.isLoading && "Loading..."}
-            {classes.isError && (
-               <button
-                  onClick={() => {
-                     queryClient.invalidateQueries([
-                        "signIn.all-signins-by-date",
-                     ]);
-                  }}
-               >
-                  Error. Click here to retry
-               </button>
-            )}
-            {classes.isSuccess &&
-               (classes.data.length === 0 ? (
-                  <Link href="/addCourse">
-                     {"You don't have any classes. Click here to make one."}
-                  </Link>
-               ) : (
-                  <Select
-                     options={classes.data.map((a) => {
-                        return { value: a.id, label: a.name };
-                     })}
-                     onChange={(value) => {
-                        setSelectedClass(value?.value);
-                     }}
-                  />
-               ))}
-         </>
-      );
-   }
-
    return (
       <div>
-         <Navbar></Navbar>
-         {/* <h1>Scanner Page</h1> */}
-         Choose a class: {classes.isLoading && "Loading..."}
-         {classes.isError && (
-            <button
-               onClick={() => {
-                  queryClient.invalidateQueries(["signIn.all-signins-by-date"]);
-               }}
-            >
-               Error. Click here to retry
-            </button>
-         )}
-         {classes.isSuccess &&
-            (classes.data.length === 0 ? (
-               <Link href="/addCourse">
-                  {"You don't have any classes. Click here to make one."}
-               </Link>
-            ) : (
-               <Select
-                  options={classes.data.map((a) => {
-                     return { value: a.id, label: a.name };
-                  })}
-                  onChange={(value) => {
-                     setSelectedClass(value?.value);
-                  }}
-                  defaultValue={{
-                     // we can assert non null because the same select just chose this value, so we know its in the array.
-                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                     value: classes.data.find((a) => a.id === selectedClass)!
-                        .id,
-                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                     label: classes.data.find((a) => a.id === selectedClass)!
-                        .name,
-                  }}
+         <Navbar title={`Scanner - ${props.scanner.name}`} />
+         <ClassChooser {...{ selectedClass, setSelectedClass }} />
+         {selectedClass !== undefined && (
+            <>
+               <ModeChooser {...{ date, setMode, setEndDate }} />
+               <AllDates
+                  {...{ mode, startDate, setStartDate, endDate, setEndDate }}
                />
-            ))}
-         <br />
-         Choose a mode:{" "}
-         <Select
-            options={[
-               {
-                  label: "Realtime (only sign ins that happen while you are on this page, default)",
-                  value: "realtime" as const,
-               },
-               {
-                  label: "Date to Realtime (starting at a date to this exact moment)",
-                  value: "date-to-realtime" as const,
-               },
-               {
-                  label: "Date to Date (starting at a date and ending at a date)",
-                  value: "date-to-date" as const,
-               },
-            ]}
-            onChange={(value) => {
-               if (value !== null) {
-                  setMode(value.value);
-                  if (value.value !== "date-to-date") {
-                     setEndDate(dayjs(date));
-                  }
-               }
-            }}
-            defaultValue={{
-               label: "Realtime (only sign ins that happen while you are on this page)",
-               value: "realtime" as
-                  | "realtime"
-                  | "date-to-realtime"
-                  | "date-to-date",
-            }}
-         />
-         {(mode === "date-to-realtime" || mode === "date-to-date") && (
-            <div>
-               Choose your start time:{" "}
-               <DatePicker time={startDate} setTime={setStartDate} />
-            </div>
+               {(mode !== "realtime" ? signedInD.isLoading : false) ||
+               people.isLoading ? (
+                  <p>Loading...</p>
+               ) : (
+                  people.isSuccess && (
+                     <AllTables
+                        {...{
+                           signedInD: {
+                              isLoading: signedInD.isLoading,
+                           },
+                           signedIn,
+                           mode,
+                           people: {
+                              data: people.data,
+                              isLoading: people.isLoading,
+                           },
+                        }}
+                     />
+                  )
+               )}
+               length of signedIn: {signedIn.length}
+               {signedInD.isError && "Error"}
+            </>
          )}
-         {mode === "date-to-date" && (
-            <div>
-               Choose your end time:{" "}
-               <DatePicker time={endDate} setTime={setEndDate} />
-            </div>
-         )}
-         {(mode !== "realtime" ? signedInD.isLoading : false) ||
-         people.isLoading ? (
-            <p>Loading...</p>
-         ) : (
-            people.isSuccess && (
-               <div className="flex flex-row space-between">
-                  {/* <h3>People in the class: </h3> */}
-                  {/* <br /> */}
-                  <Table
-                     isLoading={
-                        (mode !== "realtime" ? signedInD.isLoading : false) ||
-                        people.isLoading
-                     }
-                     data={signedIn
-                        .filter((value) => {
-                           return people.data.has(value.studentId);
-                        })
-                        .map((value) => {
-                           return {
-                              // we can assert non null here b/c we just filtered out all studentIds that are not in the map
-                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                              ...people.data.get(value.studentId)!,
-                              timestamp: value.timestamp,
-                           };
-                        })}
-                  />
-                  {/* <h3>Student Ids not in the class</h3><br /> */}
-                  <NotInClassTable
-                     isLoading={
-                        (mode !== "realtime" ? signedInD.isLoading : false) ||
-                        people.isLoading
-                     }
-                     data={signedIn.filter((value) => {
-                        return !people.data.has(value.studentId);
-                     })}
-                  />
-               </div>
-            )
-         )}
-         length of signedIn: {signedIn.length}
-         {/* {date.toLocaleString()} */}
-         {signedInD.isError && "Error"}
       </div>
    );
 };

@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import peopleClassSchema from "../schemas/peopleClassSchema";
-import AddClassFieldArray from "../components/AddClassFieldArray";
+import AddClassFieldArray from "../components/addClass/FieldArray";
 
 const AddClassNew: NextPage<
    InferGetServerSidePropsType<typeof getServerSideProps>
@@ -49,7 +49,7 @@ const AddClassNew: NextPage<
 
    return (
       <div>
-         <Navbar />
+         <Navbar title="Add Class" />
          <div>
             <form
                onSubmit={handleSubmit(async (data) => {
