@@ -16,6 +16,7 @@ import peopleClassSchema from "../schemas/peopleClassSchema";
 import AddClassFieldArray from "../components/addClass/FieldArray";
 import ClassList from "../components/classList/index";
 import { useQueryClient } from "react-query";
+import Link from "next/link";
 
 const AddClassNew: NextPage<
    InferGetServerSidePropsType<typeof getServerSideProps>
@@ -27,14 +28,23 @@ const AddClassNew: NextPage<
    const queryClient = useQueryClient();
 
    const schema = z.object({
-      name: z.string().refine(
-         (name) => {
-            return !allClasses.data?.some((c) => c.name === name);
-         },
-         {
-            message: "Class name already exists",
-         }
-      ),
+      name: z
+         .string()
+         .refine(
+            (name) => {
+               return !allClasses.data?.some((c) => c.name === name);
+            },
+            {
+               message: "Class name already exists",
+            }
+         )
+         .refine(
+            (data) => {
+               // return false if data.name has any spaces in it
+               return !data.includes(" ");
+            },
+            { message: "class name shouldn't have spaces" }
+         ),
       people: peopleClassSchema,
    });
    type FormValues = z.infer<typeof schema>;
@@ -47,11 +57,15 @@ const AddClassNew: NextPage<
    } = useForm<FormValues>({
       resolver: zodResolver(schema),
       reValidateMode: "onChange",
+      defaultValues: {
+         people: [{}],
+      },
    });
 
    return (
       <div>
          <Navbar title="Add Class" />
+         <Link href="/addClassFile">Go here to upload in bulk</Link> <br />
          <div>
             <form
                onSubmit={handleSubmit(async (data) => {

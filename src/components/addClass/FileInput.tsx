@@ -1,16 +1,15 @@
-import peopleClassSchema from "../../schemas/peopleClassSchema";
+import peopleClassSchema, { PeopleType } from "../../schemas/peopleClassSchema";
 import Papa from "papaparse";
-import { z } from "zod";
 import { createRef } from "react";
 import { useState } from "react";
-import { UseFieldArrayAppend } from "react-hook-form";
 
-const AddClassFileInput: React.FC<AddClassFileInputProps> = (props) => {
-   type PeopleType = z.infer<typeof peopleClassSchema>[number];
-   const [error, setError] = useState<boolean>(false);
-   const [data, setData] = useState<PeopleType[]>([]);
-   const [submitted, setSubmitted] = useState<boolean>(false);
+const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
+   setTableData,
+}) => {
    const fileInputRef = createRef<HTMLInputElement>();
+   const [error, setError] = useState<boolean>(false);
+   const [data, setData] = useState<PeopleType>([]);
+   const [submitted, setSubmitted] = useState<boolean>(false);
 
    const handleParse = () => {
       const file = fileInputRef.current?.files?.[0];
@@ -33,6 +32,7 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = (props) => {
                   setData(parsedData);
                } catch (e) {
                   setError(true);
+
                   console.error(e);
                }
             },
@@ -55,12 +55,12 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = (props) => {
             name="fileUpload"
             id="fileUpload"
             ref={fileInputRef}
+            accept="text/csv"
          />
          <button type="button" onClick={() => handleParse()}>
             Parse
          </button>
-         {error && <p>There was an error parsing the file</p>}
-         {data.length > 0 && (
+         {data.length > 0 && !error && (
             <div>
                <p>
                   Parsing was a success. Click the button below to add the
@@ -70,7 +70,7 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = (props) => {
                   type="button"
                   className="border border-1 border-slate-600"
                   onClick={() => {
-                     props.append(data);
+                     setTableData((a) => [...a, ...data]);
                      setSubmitted(true);
                   }}
                >
@@ -98,16 +98,8 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = (props) => {
    );
 };
 
-export type FormValues = {
-   name: string;
-   people: {
-      studentId: number;
-      firstName: string;
-      lastName: string;
-   }[];
-};
 interface AddClassFileInputProps {
-   append: UseFieldArrayAppend<FormValues, "people">;
+   setTableData: React.Dispatch<React.SetStateAction<PeopleType>>;
 }
 
 export default AddClassFileInput;

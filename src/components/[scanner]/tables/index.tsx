@@ -136,7 +136,7 @@ export type UnknownSignedInTableUnit = {
    studentId: number;
 };
 
-export type NotSignedInTableUnit = People;
+export type NotSignedInTableUnit = People | Omit<People, "id">;
 
 export type TableProps<T> = {
    data: T[];

@@ -10,7 +10,7 @@ async function main() {
          .map((_, index) => {
             const year = Math.floor(index / 300) + 20;
             const number = (index % 300) + 1;
-            const person = {
+            const person =  {
                studentId: year * 1000 + number,
                firstName: randFirstName(),
                lastName: randLastName(),

@@ -7,7 +7,7 @@ import {
    UseFormRegister,
 } from "react-hook-form";
 import type { FormValues } from "./FileInput";
-import AddClassFileInput from "./FileInput";
+// import AddClassFileInput from "./FileInput";
 
 interface AddClassFieldArrayProps {
    control: Control<FormValues>;
@@ -32,7 +32,7 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
          <ul ref={animationParent as LegacyRef<HTMLUListElement>}>
             {fields.map((field, index) => {
                return (
-                  <li key={field.id} className="flex flex-row ">
+                  <li key={field.id} className="flex flex-row justify-between  ">
                      <div>
                         <label htmlFor={`people.${index}.studentId`}>
                            Student Id:{" "}
@@ -123,8 +123,8 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
          >
             Remove All Students
          </button>
-         {isTransitioning && <p>Loading file addition...</p>}
-         <AddClassFileInput {...{ append }} />
+         {/* {isTransitioning && <p>Loading file addition...</p>}
+         <AddClassFileInput {...{ append }} /> */}
          {errors.people?.message && (
             <p className="text-red-500">{errors.people.message}</p>
          )}

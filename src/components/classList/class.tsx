@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useQueryClient } from "react-query";
 import { useState } from "react";
 import DeleteModal from "./modal";
 

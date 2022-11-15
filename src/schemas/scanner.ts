@@ -1,6 +1,5 @@
 import * as yup from "yup";
 import { trpc } from "../utils/trpcVanilla";
-import { z } from "zod";
 
 // const scannerSchema = z.object({
 //   id: z.number().optional(),
