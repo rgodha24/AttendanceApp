@@ -6,8 +6,12 @@ import {
    useFieldArray,
    UseFormRegister,
 } from "react-hook-form";
-import type { FormValues } from "./FileInput";
-// import AddClassFileInput from "./FileInput";
+import type { PeopleType } from "../../schemas/peopleClassSchema";
+
+type FormValues = {
+   people: PeopleType;
+   name: string;
+};
 
 interface AddClassFieldArrayProps {
    control: Control<FormValues>;
@@ -32,7 +36,10 @@ const AddClassFieldArray: React.FC<AddClassFieldArrayProps> = ({
          <ul ref={animationParent as LegacyRef<HTMLUListElement>}>
             {fields.map((field, index) => {
                return (
-                  <li key={field.id} className="flex flex-row justify-between  ">
+                  <li
+                     key={field.id}
+                     className="flex flex-row justify-between  "
+                  >
                      <div>
                         <label htmlFor={`people.${index}.studentId`}>
                            Student Id:{" "}

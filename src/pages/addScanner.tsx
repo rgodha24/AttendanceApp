@@ -8,6 +8,7 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import { trpc } from "../utils/trpc";
 import { getBaseUrl } from "./_app";
 import { useQueryClient } from "react-query";
+import ScannerList from "../components/scannerList";
 
 type FormValues = Pick<
    InferType<typeof scannerSchema>,
@@ -27,13 +28,12 @@ const AddScanner: NextPage = () => {
          queryClient.invalidateQueries("scanner.get-all-scanners-by-user");
       },
    });
-   const scanners = trpc.useQuery(["scanner.get-all-scanners-by-user"]);
 
    return (
-      <>
-         <Navbar title="Add Scanner"/>
+      <div >
+         <Navbar title="Add Scanner" />
          <br />
-         <div>
+         <div className="px-3">
             <Formik
                initialValues={initialValues}
                validationSchema={scannerSchema}
@@ -46,7 +46,7 @@ const AddScanner: NextPage = () => {
                   });
                }}
             >
-               {({ isSubmitting, setValues, resetForm, values }) => (
+               {({ isSubmitting, setValues, resetForm,  }) => (
                   <Form>
                      <label htmlFor="name">Scanner Name: </label>
                      <Field type="text" name="name" />
@@ -98,29 +98,22 @@ const AddScanner: NextPage = () => {
                      </button>
                      <br />
                      {isSubmitting && <div>Submitting...</div>}
-                     {mutation.isError && <div>Error: {mutation.error.message}</div>}
+                     {mutation.isError && (
+                        <div>Error: {mutation.error.message}</div>
+                     )}
                      {mutation.isSuccess && (
                         <button onClick={() => resetForm()}>
                            Success! Click Here to Reset the form
                         </button>
                      )}
-                     {JSON.stringify(values)}
+                     {/* {JSON.stringify(values)} */}
                   </Form>
                )}
             </Formik>
-
             <br />
-            <h1>Your Scanners</h1>
-            {scanners.isLoading && <div>Loading...</div>}
-            {scanners.isError && <div>{scanners.error.message}</div>}
-            {scanners.isSuccess &&
-               scanners.data.map((scanner) => (
-                  <p key={scanner.id}>
-                     name: {scanner.name}, secret: {scanner.scannerSecret}
-                  </p>
-               ))}
+            <ScannerList />
          </div>
-      </>
+      </div>
    );
 };
 

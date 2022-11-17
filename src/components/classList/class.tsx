@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
-import DeleteModal from "./modal";
+import DeleteClassModal from "./modal";
 
 const Class: React.FC<ClassProps> = (props) => {
    const [show, setShow] = useState(false);
@@ -13,7 +13,11 @@ const Class: React.FC<ClassProps> = (props) => {
          <button type="reset" onClick={() => setShow(true)}>
             Delete ❌
          </button>
-         {show && <DeleteModal {...{ classId: props.id, setShow, className: props.name }} />}
+         {show && (
+            <DeleteClassModal
+               {...{ classId: props.id, setShow, className: props.name }}
+            />
+         )}
       </div>
    );
 };

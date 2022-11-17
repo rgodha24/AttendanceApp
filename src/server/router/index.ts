@@ -12,11 +12,6 @@ export const appRouter = createRouter()
    .merge("class.", classRouter)
    .merge("misc.", miscRouter)
    .merge("scanner.", scannerRouter)
-   .query("hello", {
-      async resolve() {
-         return "world";
-      },
-   });
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

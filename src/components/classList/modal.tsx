@@ -1,66 +1,40 @@
 import { useQueryClient } from "react-query";
 import { trpc } from "../../utils/trpc";
-import { Dialog } from "@headlessui/react";
+import type {  ModalProps } from "../modal";
+import Modal from "../modal";
 
-const DeleteModal: React.FC<DeleteModalProps> = (props) => {
+const DeleteClassModal: React.FC<DeleteClassModalProps> = (props) => {
    const mutation = trpc.useMutation("class.delete-class");
    const queryClient = useQueryClient();
 
+   const modalProps: ModalProps = {
+      title: `Delete Class ${props.className}?`,
+      description: `Are you sure you want to delete ${props.className}?`,
+      deleteDescription: `Delete ${props.className}`,
+      isDeleting: mutation.isLoading,
+      setShow: props.setShow,
+      handleDelete: async (e) => {
+         e.preventDefault();
+         mutation.mutate(
+            { id: props.classId },
+            {
+               onSettled: () =>
+                  queryClient.invalidateQueries([
+                     "class.get-all-classes-by-user",
+                  ]),
+            }
+         );
+      },
+   };
+
    return (
-      <Dialog
-         open={true}
-         onClose={() => props.setShow(false)}
-         className=" relative z-50 "
-      >
-         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-         <div className="fixed inset-0 flex justify-center p-4  text-palette-white">
-            <Dialog.Panel className="w-full ">
-               <Dialog.Title className="flex justify-center items-center m-auto w-full ">
-                  <h2 className="text-4xl ">Delete Class {props.className}?</h2>
-               </Dialog.Title>
-               <Dialog.Description className="flex justify-center items-center m-auto w-full ">
-                  <p className="text-xl mt-4">
-                     Are you sure you want to delete this class? This action
-                     cannot be undone.
-                  </p>
-               </Dialog.Description>
-               <button
-                  className="flex justify-center items-center m-auto p-4 text-xl mt-4 h-10 bg-palette-blue"
-                  type="button"
-                  onClick={async (e) => {
-                     e.preventDefault();
-                     mutation.mutate(
-                        { id: props.classId },
-                        {
-                           onSettled: () =>
-                              queryClient.invalidateQueries([
-                                 "class.get-all-classes-by-user",
-                              ]),
-                        }
-                     );
-                  }}
-               >
-                  Delete {props.className}
-               </button>
-               <button
-                  className="flex justify-center items-center m-auto p-4 text-xl mt-4 h-10 bg-palette-crimson"
-                  type="button"
-                  onClick={async () => props.setShow(false)}
-               >
-                  Close
-               </button>
-               {mutation.isLoading && (
-                  <p className="text-palette-crimson">Deleting...</p>
-               )}
-            </Dialog.Panel>
-         </div>
-      </Dialog>
+      <Modal {...modalProps}/>
    );
 };
 
-export interface DeleteModalProps {
+export interface DeleteClassModalProps {
    classId: number;
    className: string;
    setShow: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default DeleteModal;
+export default DeleteClassModal;

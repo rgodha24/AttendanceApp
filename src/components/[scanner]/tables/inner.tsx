@@ -14,9 +14,15 @@ function TableInner<T extends TableUnit>({
          <table className=" ">
             <thead>
                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id} className="border border-palette-teal p-2">
+                  <tr
+                     key={headerGroup.id}
+                     className="border border-palette-teal p-2"
+                  >
                      {headerGroup.headers.map((header) => (
-                        <th key={header.id} className="border border-palette-teal">
+                        <th
+                           key={header.id}
+                           className="border border-palette-teal"
+                        >
                            <div
                               className={
                                  header.column.getCanSort()

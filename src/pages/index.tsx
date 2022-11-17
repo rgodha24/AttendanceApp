@@ -13,7 +13,10 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
          <div className="flex-col  ">
             <h2 className="flex justify-center text-4xl mt-4"> Scanners: </h2>
             {(props.scanners || []).map((scanner) => (
-               <div key={scanner.id} className="flex justify-center mt-4 text-xl">
+               <div
+                  key={scanner.id}
+                  className="flex justify-center mt-4 text-xl"
+               >
                   <Link href={"/scanners/" + scanner.name}>{scanner.name}</Link>
                </div>
             )) || <div className="flex justify-center mt-4 text-xl ">None</div>}
