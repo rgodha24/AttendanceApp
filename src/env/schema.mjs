@@ -19,7 +19,7 @@ export const serverSchema = z.object({
    PUSHER_APP_ID: z.string(),
    PUSHER_SECRET: z.string(),
    PURGE_SECRET: z.string(),
-   VERCEL_URL: z.string().url().optional(),
+   // VERCEL_URL: z.string().url().optional(),
 });
 
 /**
