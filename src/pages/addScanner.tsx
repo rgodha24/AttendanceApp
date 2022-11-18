@@ -1,26 +1,19 @@
 import { GetServerSideProps, NextPage } from "next";
 import Navbar from "../components/Navbar";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import scannerSchema from "../schemas/scanner";
-import { InferType } from "yup";
+import { z } from "zod";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { trpc } from "../utils/trpc";
 import { getBaseUrl } from "./_app";
 import { useQueryClient } from "react-query";
 import ScannerList from "../components/scannerList";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type FormValues = Pick<
-   InferType<typeof scannerSchema>,
-   "name" | "scannerSecret" | "purgeEveryDays"
->; // idk why but this return type is messed up if i dont do this
+export type FormValues = z.infer<typeof scannerSchema>; // idk why but this return type is messed up if i dont do this
 
 const AddScanner: NextPage = () => {
-   const initialValues: FormValues = {
-      name: "scannerName",
-      scannerSecret: "scanner secret ",
-      purgeEveryDays: 14,
-   };
    const queryClient = useQueryClient();
 
    const mutation = trpc.useMutation("scanner.create-scanner", {
@@ -29,88 +22,88 @@ const AddScanner: NextPage = () => {
       },
    });
 
+   const {
+      register,
+      handleSubmit,
+      reset,
+      formState: { errors, isSubmitting, isValidating, isValid },
+   } = useForm<FormValues>({
+      resolver: zodResolver(scannerSchema),
+      reValidateMode: "onChange",
+   });
+   register("name", { required: true });
+
    return (
-      <div >
+      <div>
          <Navbar title="Add Scanner" />
          <br />
          <div className="px-3">
-            <Formik
-               initialValues={initialValues}
-               validationSchema={scannerSchema}
-               onSubmit={async (values, actions) => {
-                  actions.setSubmitting(true);
-                  await mutation.mutateAsync(values, {
-                     onSettled() {
-                        actions.setSubmitting(false);
-                     },
-                  });
-               }}
+            <form
+               onSubmit={handleSubmit(async (data) => {
+                  await mutation.mutateAsync(data);
+                  queryClient.invalidateQueries([
+                     "scanner.get-all-scanners-by-user",
+                     "scanner.get-all-scanner-names",
+                  ]);
+               })}
             >
-               {({ isSubmitting, setValues, resetForm,  }) => (
-                  <Form>
-                     <label htmlFor="name">Scanner Name: </label>
-                     <Field type="text" name="name" />
-                     <ErrorMessage
-                        name="name"
-                        component="div"
-                        className="text-red-500"
-                     />
-                     <br className="mt-2" />
-                     <label htmlFor="scannerSecret">Scanner Secret: </label>
-                     <Field type="text" name="scannerSecret" />
-                     <button
-                        type="button"
-                        onClick={() =>
-                           setValues((values) => {
-                              return {
-                                 ...values,
-                                 scannerSecret:
-                                    Math.random().toString(36).substring(2, 5) +
-                                    Math.random().toString(36).substring(2, 5),
-                              };
-                           })
-                        }
-                     >
-                        Randomize Scanner Secret
-                     </button>
-                     <ErrorMessage
-                        name="scannerSecret"
-                        component="div"
-                        className="text-red-500"
-                     />
-                     <br className="mt-2" />
-                     <label htmlFor="purgeEveryDays">
-                        How often to delete the data in days, default = 14:{" "}
-                     </label>
-                     <Field type="number" name="purgeEveryDays" />
-                     <ErrorMessage
-                        name="purgeEveryDays"
-                        component="div"
-                        className="text-red-500"
-                     />
-                     <br className="mt-2" />
-                     <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="bg-red-500 text-2xl p-2"
-                     >
+               <div>
+                  <label htmlFor="name">Scanner Name</label>
+                  <input
+                     type="text"
+                     {...register("name", { required: true })}
+                     placeholder="Scanner Name"
+                     className="ml-3"
+                  />
+                  {errors.name && (
+                     <p className="text-red-500">{errors.name.message}</p>
+                  )}
+               </div>
+               <div>
+                  <label htmlFor="secret">Scanner Secret</label>
+                  <input
+                     type="text"
+                     {...register("scannerSecret", { required: true })}
+                     placeholder="Scanner Secret"
+                     className="ml-3"
+                  />
+                  {errors.scannerSecret && (
+                     <p className="text-red-500">
+                        {errors.scannerSecret.message}
+                     </p>
+                  )}
+               </div>
+               <div>
+                  {isSubmitting && <p>Submitting....</p>}
+                  {isValidating && <p>Validating....</p>}
+                  {isValid ? (
+                     <button type="submit" disabled={isSubmitting}>
                         Submit
                      </button>
-                     <br />
-                     {isSubmitting && <div>Submitting...</div>}
-                     {mutation.isError && (
-                        <div>Error: {mutation.error.message}</div>
-                     )}
-                     {mutation.isSuccess && (
-                        <button onClick={() => resetForm()}>
-                           Success! Click Here to Reset the form
+                  ) : (
+                     <p className="text-red-500">
+                        Form is not valid, can not submit
+                     </p>
+                  )}
+                  {mutation.isSuccess && (
+                     <div>
+                        <p>Submitted Successfully</p>
+                        <button
+                           type="reset"
+                           onClick={() => {
+                              reset();
+                              mutation.reset();
+                           }}
+                        >
+                           Click here to reset the form
                         </button>
-                     )}
-                     {/* {JSON.stringify(values)} */}
-                  </Form>
-               )}
-            </Formik>
-            <br />
+                     </div>
+                  )}
+                  {mutation.isError && <p>There was an error submitting</p>}
+               </div>
+            </form>
+         </div>
+         <div className="px-3">
             <ScannerList />
          </div>
       </div>

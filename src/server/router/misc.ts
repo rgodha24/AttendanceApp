@@ -10,6 +10,6 @@ export const miscRouter = createRouter().query("check-scanner-name", {
          },
       });
 
-      return scanner === null ? "taken" : "available";
+      return scanner === null ? ("taken" as const) : ("available" as const);
    },
 });
