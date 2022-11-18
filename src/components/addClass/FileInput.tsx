@@ -10,6 +10,9 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
    const [error, setError] = useState<boolean>(false);
    const [data, setData] = useState<PeopleType>([]);
    const [submitted, setSubmitted] = useState<boolean>(false);
+   const [fnName, setFNName] = useState("firstName");
+   const [lnName, setLNName] = useState("lastName");
+   const [siName, setSIName] = useState("studentId");
 
    const handleParse = () => {
       const file = fileInputRef.current?.files?.[0];
@@ -19,20 +22,21 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
             complete: (results) => {
                const data = results.data;
                try {
-                  const cleanedData = data.map((a) => {
-                     return {
-                        ...(a as Record<string, unknown>),
-                        studentId: Number(
-                           (a as Record<string, unknown>).studentId
-                        ),
-                     } as Record<string, unknown> & { studentId: number };
-                  });
+                  const cleanedData = (data as Record<string, unknown>[]).map(
+                     (a) => {
+                        return {
+                           ...a,
+                           studentId: Number(a[siName]),
+                           firstName: a[fnName],
+                           lastName: a[lnName],
+                        };
+                     }
+                  );
                   const parsedData = peopleClassSchema.parse(cleanedData);
                   setError(false);
                   setData(parsedData);
                } catch (e) {
                   setError(true);
-
                   console.error(e);
                }
             },
@@ -43,12 +47,29 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
    return (
       <div>
          <label htmlFor="fileUpload">
-            <p>
-               File Input: Upload a csv with the titles{" "}
-               {'"firstName, lastName, studentId'} for each student you want to
-               add. It will be appended to the current list of students in the
-               class
-            </p>
+            <div>
+               Upload a csv with the titles{" "}
+               <input
+                  type="text"
+                  value={fnName}
+                  onChange={(e) => setFNName(e.target.value)}
+                  className="w-min"
+               />
+               <input
+                  type="text"
+                  value={lnName}
+                  onChange={(e) => setLNName(e.target.value)}
+                  className="w-fit"
+               />
+               <input
+                  type="text"
+                  value={siName}
+                  onChange={(e) => setSIName(e.target.value)}
+                  className="w-fit"
+               />
+               for each student you want to add. It will be appended to the
+               current list of students in the class
+            </div>
          </label>
          <input
             type="file"
@@ -58,8 +79,13 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
             accept="text/csv"
          />
          <button type="button" onClick={() => handleParse()}>
-            Parse
+            Parse CSV
          </button>
+         {error && (
+            <p>
+               Error parsing
+            </p>
+         )}
          {data.length > 0 && !error && (
             <div>
                <p>
@@ -72,6 +98,9 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
                   onClick={() => {
                      setTableData((a) => [...a, ...data]);
                      setSubmitted(true);
+                     setError(false);
+                     setSubmitted(false);
+                     setData([]);
                   }}
                >
                   Add Students

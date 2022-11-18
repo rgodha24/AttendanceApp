@@ -39,6 +39,7 @@ const AddClassFiles: NextPage<
    const schema = z.object({
       name: z
          .string()
+         .min(1)
          .refine(
             (name) => {
                return !allClasses.data?.some((c) => c.name === name);
@@ -109,9 +110,10 @@ const AddClassFiles: NextPage<
             value={className}
             onChange={(e) => setClassName(e.target.value)}
          />
-
          <AddClassFileInput {...{ setTableData }} />
-         <button onClick={() => handleValidate()}>Validate</button>
+         <button onClick={() => handleValidate()}>
+            Validate (before submitting)
+         </button>
          {!!validationError && (
             <p>Error Validating data, try again. Error: {validationError}</p>
          )}
