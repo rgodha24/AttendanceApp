@@ -39,7 +39,7 @@ SCANNER_SECRET = "${scannerSecret}"
 
 def postData(id: int):
     url = f"{BASE_URL}/api/signIn/{urllib.parse.quote(SCANNER_NAME)}/{id}?secret={urllib.parse.quote(SCANNER_SECRET)}"
-    return Request(url) 
+    return urlopen(Request(url))
 
 def main():
     try:
@@ -53,6 +53,9 @@ def main():
                 print("Invalid Code")
     except KeyboardInterrupt:
         print("stopping...")
+        
+if __name__ == "__main__": 
+   main()
 `;
 
 export default handler;

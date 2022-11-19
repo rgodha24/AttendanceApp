@@ -153,8 +153,6 @@ export const classRouter = createProtectedRouter()
             },
          });
 
-         console.log("class item id", classItem!.id);
-
          if (!classItem) {
             throw new TRPCError({
                code: "NOT_FOUND",

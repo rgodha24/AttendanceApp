@@ -1,13 +1,14 @@
 import urllib.parse
-from urllib.request import Request
-BASE_URL = ""
-SCANNER_NAME = ""
-SCANNER_SECRET = ""
+from urllib.request import Request, urlopen
+BASE_URL = "http://localhost:3000"
+SCANNER_NAME = "GreatHall"
+SCANNER_SECRET = "abcde"
 
 
 def postData(id: int):
     url = f"{BASE_URL}/api/signIn/{urllib.parse.quote(SCANNER_NAME)}/{id}?secret={urllib.parse.quote(SCANNER_SECRET)}"
-    return Request(url) 
+    print(url)
+    return urlopen(Request(url))
 
 def main():
     try:
@@ -21,3 +22,6 @@ def main():
                 print("Invalid Code")
     except KeyboardInterrupt:
         print("stopping...")
+        
+if __name__ == "__main__": 
+   main()
