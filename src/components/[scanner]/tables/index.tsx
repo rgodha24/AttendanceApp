@@ -41,7 +41,7 @@ const SignedInTable: React.FC<
                  .map((id) => props.data.find((a) => a.studentId === id))
                  .filter((a) => a !== undefined) as SignedInTableUnit[])
             : props.data,
-      [props.data, props.dedupe]
+      [props.data, props.dedup]
    );
 
    const table = useReactTable<SignedInTableUnit>({
