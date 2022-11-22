@@ -19,7 +19,7 @@ const handler: NextApiHandler<string | { error: string }> = async (
       return;
    }
    const baseUrl =
-      process.env.VERCEL_URL || `http://localhost:${process.env.PORT || 3000}`;
+      `https://${process.env.VERCEL_URL}` || `http://localhost:${process.env.PORT || 3000}`;
    res.status(200).send(
       createCode(baseUrl, scannerName.data, scannerSecret.data)
    );
@@ -31,7 +31,7 @@ const createCode = (
    scannerName: string,
    scannerSecret: string
 ) => `import urllib.parse
-from urllib.request import Request
+from urllib.request import Request, urlopen
 BASE_URL = "${baseUrl}"
 SCANNER_NAME = "${scannerName}"
 SCANNER_SECRET = "${scannerSecret}"
