@@ -10,14 +10,20 @@ import scannerNameSchema from "../../schemas/scannerName";
 import useSignIn from "../../utils/hooks/useSignIn";
 import { trpc } from "../../utils/trpc";
 import AllTables from "../../components/[scanner]/tables/all";
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import dayjs from "dayjs";
-import AllDates from "../../components/date/all";
 import withUsePusher from "../../utils/withUsePusher";
 import Navbar from "../../components/Navbar";
 import { env } from "../../env/client.mjs";
 import ClassChooser from "../../components/[scanner]/ClassChooser";
 import ModeChooser from "../../components/[scanner]/ModeChooser";
+import { parseAbsoluteToLocal } from "@internationalized/date";
+import dynamic from "next/dynamic";
+
+const AllDates = dynamic(() => import("../../components/date/all"), {
+   ssr: false,
+   suspense: true,
+});
 
 const ScannerPageInner: NextPage<
    InferGetStaticPropsType<typeof getStaticProps>
@@ -26,8 +32,12 @@ const ScannerPageInner: NextPage<
    const [mode, setMode] = useState<
       "realtime" | "date-to-realtime" | "date-to-date"
    >("realtime");
-   const [startDate, setStartDate] = useState(dayjs().subtract(1, "hour"));
-   const [endDate, setEndDate] = useState(dayjs(date));
+   const [endDate, setEndDate] = useState(
+      parseAbsoluteToLocal(dayjs(date).toISOString())
+   );
+   const [startDate, setStartDate] = useState(
+      parseAbsoluteToLocal(dayjs().subtract(1, "hour").toISOString())
+   );
    const [selectedClass, setSelectedClass] = useState<number>();
 
    const people = trpc.useQuery([
@@ -62,10 +72,18 @@ const ScannerPageInner: NextPage<
          <ClassChooser {...{ selectedClass, setSelectedClass }} />
          {selectedClass !== undefined && (
             <>
-               <ModeChooser {...{ date, setMode, setEndDate }} />
-               <AllDates
-                  {...{ mode, startDate, setStartDate, endDate, setEndDate }}
-               />
+               <ModeChooser {...({ date, setMode, setEndDate } as any)} />
+               <Suspense fallback={"Loading..."}>
+                  <AllDates
+                     {...({
+                        mode,
+                        startDate,
+                        setStartDate,
+                        endDate,
+                        setEndDate,
+                     } as any)}
+                  />
+               </Suspense>
                {(mode !== "realtime" ? signedInD.isLoading : false) ||
                people.isLoading ? (
                   <p>Loading...</p>

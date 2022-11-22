@@ -6,10 +6,12 @@ import {
    SortingState,
    getSortedRowModel,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TableInner from "./inner";
 
-const SignedInTable: React.FC<TableProps<SignedInTableUnit>> = (props) => {
+const SignedInTable: React.FC<
+   TableProps<SignedInTableUnit> & { dedup?: boolean }
+> = (props) => {
    const columnHelper = createColumnHelper<SignedInTableUnit>();
    const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -32,8 +34,18 @@ const SignedInTable: React.FC<TableProps<SignedInTableUnit>> = (props) => {
       }),
    ];
 
+   const data = useMemo(
+      () =>
+         (props.dedup || false)
+            ? ([...new Set(props.data.map((a) => a.studentId)).values()]
+                 .map((id) => props.data.find((a) => a.studentId === id))
+                 .filter((a) => a !== undefined) as SignedInTableUnit[])
+            : props.data,
+      [props.data, props.dedupe]
+   );
+
    const table = useReactTable<SignedInTableUnit>({
-      data: props.data,
+      data,
       columns,
       getCoreRowModel: getCoreRowModel(),
       state: {
@@ -127,9 +139,12 @@ const NotSignedInTable: React.FC<TableProps<NotSignedInTableUnit>> = (
    return <TableInner table={table} />;
 };
 
-export type SignedInTableUnit = People & {
-   timestamp: Date;
-};
+export type SignedInTableUnit = Omit<
+   People & {
+      timestamp: Date;
+   },
+   "id"
+>;
 
 export type UnknownSignedInTableUnit = {
    timestamp: Date;

@@ -1,6 +1,6 @@
-import dayjs from "dayjs";
 import { Dispatch, SetStateAction } from "react";
-import DatePicker from "./DatePicker";
+import { DatePickerNew } from "./DatePicker/DatePickerNew";
+import { DateValue } from "@internationalized/date";
 
 const AllDates: React.FC<AllDatesProps> = ({
    mode,
@@ -14,13 +14,24 @@ const AllDates: React.FC<AllDatesProps> = ({
          {(mode === "date-to-realtime" || mode === "date-to-date") && (
             <div>
                Choose your start time:{" "}
-               <DatePicker time={startDate} setTime={setStartDate} />
+               <DatePickerNew
+                  label="start date and time"
+                  granularity="second"
+                  value={startDate}
+                  onChange={setStartDate}
+               />
             </div>
          )}
          {mode === "date-to-date" && (
             <div>
                Choose your end time:{" "}
-               <DatePicker time={endDate} setTime={setEndDate} />
+               <DatePickerNew
+                  label="end date and time"
+                  granularity="second"
+                  value={endDate}
+                  onChange={setEndDate}
+                  minValue={startDate}
+               />
             </div>
          )}
       </div>
@@ -29,10 +40,10 @@ const AllDates: React.FC<AllDatesProps> = ({
 
 interface AllDatesProps {
    mode: "realtime" | "date-to-realtime" | "date-to-date";
-   startDate: dayjs.Dayjs;
-   setStartDate: Dispatch<SetStateAction<dayjs.Dayjs>>;
-   endDate: dayjs.Dayjs;
-   setEndDate: Dispatch<SetStateAction<dayjs.Dayjs>>;
+   startDate: DateValue;
+   setStartDate: Dispatch<SetStateAction<DateValue>>;
+   endDate: DateValue;
+   setEndDate: Dispatch<SetStateAction<DateValue>>;
 }
 
 export default AllDates;

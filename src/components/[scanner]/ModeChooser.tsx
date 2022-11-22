@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
+import { parseAbsoluteToLocal, DateValue } from "@internationalized/date";
 
 const ModeChooser: React.FC<ModeChooserProps> = ({
    setMode,
@@ -30,7 +31,7 @@ const ModeChooser: React.FC<ModeChooserProps> = ({
                if (value !== null) {
                   setMode(value.value);
                   if (value.value !== "date-to-date") {
-                     setEndDate(dayjs(date));
+                     setEndDate(parseAbsoluteToLocal(date.toISOString()));
                   }
                }
             }}
@@ -50,7 +51,7 @@ export interface ModeChooserProps {
    setMode: Dispatch<
       SetStateAction<"realtime" | "date-to-realtime" | "date-to-date">
    >;
-   setEndDate: Dispatch<SetStateAction<dayjs.Dayjs>>;
+   setEndDate: Dispatch<SetStateAction<DateValue>>;
    date: Date;
 }
 

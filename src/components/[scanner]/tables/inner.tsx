@@ -23,10 +23,10 @@ function TableInner<T extends TableUnit>({
                            key={header.id}
                            className="border border-palette-teal"
                         >
-                           <div
+                           <button
                               className={
                                  header.column.getCanSort()
-                                    ? "cursor-pointer select"
+                                    ? "cursor-pointer select focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     : ""
                               }
                               {...{
@@ -44,7 +44,7 @@ function TableInner<T extends TableUnit>({
                                  asc: " 🔼",
                                  desc: " 🔽",
                               }[header.column.getIsSorted() as string] ?? null}
-                           </div>
+                           </button>
                         </th>
                      ))}
                   </tr>
