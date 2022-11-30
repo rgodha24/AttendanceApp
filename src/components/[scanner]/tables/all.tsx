@@ -16,7 +16,8 @@ const AllTables: React.FC<AllTableProps> = ({
             <Toggle enabled={dedup} setEnabled={setDedup} />
          </div>
          <div className="flex flex-row space-between justify-between ">
-            <div className="">
+            <div className="flex-col">
+               <h2 className="text-xl">Signed in</h2>
                <SignedInTable
                   isLoading={
                      (mode !== "realtime" ? signedInD.isLoading : false) ||
@@ -37,18 +38,8 @@ const AllTables: React.FC<AllTableProps> = ({
                      })}
                />
             </div>
-            <div>
-               <UnknownSignedInTable
-                  isLoading={
-                     (mode !== "realtime" ? signedInD.isLoading : false) ||
-                     people.isLoading
-                  }
-                  data={signedIn.filter((value) => {
-                     return !people.data.has(value.studentId);
-                  })}
-               />
-            </div>
-            <div>
+            <div className="flex-col">
+               <h2 className="text-xl">Not signed in</h2>
                <NotSignedInTable
                   isLoading={
                      (mode !== "realtime" ? signedInD.isLoading : false) ||
@@ -58,6 +49,18 @@ const AllTables: React.FC<AllTableProps> = ({
                      return !signedIn.some(
                         (a) => a.studentId === value.studentId
                      );
+                  })}
+               />
+            </div>
+            <div className="flex-col">
+               <h2 className="text-xl">Signed in but not in class</h2>
+               <UnknownSignedInTable
+                  isLoading={
+                     (mode !== "realtime" ? signedInD.isLoading : false) ||
+                     people.isLoading
+                  }
+                  data={signedIn.filter((value) => {
+                     return !people.data.has(value.studentId);
                   })}
                />
             </div>
