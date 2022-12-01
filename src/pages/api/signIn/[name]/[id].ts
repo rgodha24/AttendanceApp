@@ -1,9 +1,9 @@
 import { NextApiHandler } from "next";
 import { z } from "zod";
-import scannerNameSchema from "../../../../schemas/scannerName";
-import { prisma } from "../../../../server/db/client";
+import scannerNameSchema from "~/schemas/scannerName";
+import { prisma } from "~/db";
 import { SignIn } from "@prisma/client";
-import pusher from "../../../../utils/pusherServer";
+import pusher from "~/utils/pusherServer";
 
 const handler: NextApiHandler<SignIn | { error: string }> = async (
    req,

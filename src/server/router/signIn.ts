@@ -13,11 +13,9 @@ export const signInRouter = createRouter().query("all-signins-by-date", {
       const scanner = await ctx.prisma.scanner.findUnique({
          where: { name: input.scannerName },
       });
-      // console.log(input.startDate.toISOString());
-      // console.table(scanner)
-      // console.log()
+
       if (scanner === null) {
-         return new TRPCError({
+         throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Scanner not found",
          });

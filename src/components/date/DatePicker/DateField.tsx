@@ -54,7 +54,9 @@ function DateSegment({
       <div
          {...segmentProps}
          ref={ref}
-         className={`segment mx-1 ${segment.isPlaceholder ? "placeholder" : ""}`}
+         className={`segment mx-1 ${
+            segment.isPlaceholder ? "placeholder" : ""
+         }`}
       >
          {segment.text}
       </div>

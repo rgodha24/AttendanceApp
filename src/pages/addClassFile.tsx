@@ -14,7 +14,7 @@ import { NotSignedInTable } from "../components/[scanner]/tables";
 import ClassList from "../components/classList";
 import Navbar from "../components/Navbar";
 import AddClassFileInput from "../components/addClass/FileInput";
-import { trpc } from "../utils/trpc";
+import { trpc } from "~/trpc";
 import { useQueryClient } from "react-query";
 
 const AddClassFiles: NextPage<

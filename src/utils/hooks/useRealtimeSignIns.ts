@@ -3,7 +3,7 @@ import { SignIn } from "@prisma/client";
 
 import { useChannel, useEvent } from "@rgodha24/use-pusher";
 
-const useSignIn = (channelName: string) => {
+const useRealtimeSignIns = (channelName: `scanner-${string}`) => {
    const [signIns, setSignIns] = useState<Array<SignIn>>([]);
    const [dateState, setDateState] = useState(1);
    // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -28,4 +28,4 @@ const useSignIn = (channelName: string) => {
    return [signIns, date, reset] as const;
 };
 
-export default useSignIn;
+export default useRealtimeSignIns;

@@ -1,6 +1,6 @@
 import { useQueryClient } from "react-query";
-import { trpc } from "../../utils/trpc";
-import type {  ModalProps } from "../modal";
+import { trpc } from "~/trpc";
+import type { ModalProps } from "../modal";
 import Modal from "../modal";
 
 const DeleteClassModal: React.FC<DeleteClassModalProps> = (props) => {
@@ -27,9 +27,7 @@ const DeleteClassModal: React.FC<DeleteClassModalProps> = (props) => {
       },
    };
 
-   return (
-      <Modal {...modalProps}/>
-   );
+   return <Modal {...modalProps} />;
 };
 
 export interface DeleteClassModalProps {

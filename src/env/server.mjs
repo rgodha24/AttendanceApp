@@ -13,7 +13,7 @@ if (_serverEnv.success === false) {
       "❌ Invalid environment variables:\n",
       ...formatErrors(_serverEnv.error.format())
    );
-   console.log(process.env)
+   console.log(process.env);
    throw new Error("Invalid environment variables");
 }
 

@@ -6,10 +6,10 @@ import {
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { getBaseUrl } from "./_app";
-import { prisma } from "../server/db/client";
+import { prisma } from "~/db";
 import { useForm } from "react-hook-form";
 import Navbar from "../components/Navbar";
-import { trpc } from "../utils/trpc";
+import { trpc } from "~/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import peopleClassSchema from "../schemas/peopleClassSchema";

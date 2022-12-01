@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "~/trpc";
 import type { ModalProps } from "../modal";
 import Modal from "../modal";
 
@@ -10,7 +10,9 @@ const DeleteScannerModal: React.FC<DeleteScannerModalProps> = (props) => {
    const modalProps: ModalProps = {
       title: `Delete Scanner ${props.scannerName}?`,
       description: `Are you sure you want to delete ${props.scannerName}?`,
-      deleteDescription: `${mutation.isLoading ? "Deleting" : "Delete"} ${props.scannerName}${mutation.isLoading?"....":""}`,
+      deleteDescription: `${mutation.isLoading ? "Deleting" : "Delete"} ${
+         props.scannerName
+      }${mutation.isLoading ? "...." : ""}`,
       isDeleting: mutation.isLoading,
       setShow: props.setShow,
       handleDelete: async (e) => {

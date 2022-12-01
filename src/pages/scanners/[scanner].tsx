@@ -4,23 +4,24 @@ import type {
    InferGetStaticPropsType,
    NextPage,
 } from "next";
-import { prisma } from "../../server/db/client";
+import { prisma } from "~/db";
 import type { Scanner } from "@prisma/client";
-import scannerNameSchema from "../../schemas/scannerName";
-import useSignIn from "../../utils/hooks/useSignIn";
-import { trpc } from "../../utils/trpc";
-import AllTables from "../../components/[scanner]/tables/all";
-import { useState, useMemo, Suspense } from "react";
+import scannerNameSchema from "~/schemas/scannerName";
+import { trpc } from "~/trpc";
+import AllTables from "~/components/[scanner]/tables/all";
+import { useState, Suspense } from "react";
 import dayjs from "dayjs";
-import withUsePusher from "../../utils/withUsePusher";
-import Navbar from "../../components/Navbar";
-import { env } from "../../env/client.mjs";
-import ClassChooser from "../../components/[scanner]/ClassChooser";
-import ModeChooser from "../../components/[scanner]/ModeChooser";
+import withUsePusher from "~/utils/withUsePusher";
+import Navbar from "~/components/Navbar";
+import { env } from "~/env/client";
+import ClassChooser from "~/components/[scanner]/ClassChooser";
+import ModeChooser from "~/components/[scanner]/ModeChooser";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import dynamic from "next/dynamic";
+import { type ScannerModes } from "~/types/scannerModes";
+import { useSignIns } from "~/hooks/useSignIns";
 
-const AllDates = dynamic(() => import("../../components/date/all"), {
+const AllDates = dynamic(() => import("~/components/date/all"), {
    ssr: false,
    suspense: true,
 });
@@ -28,12 +29,9 @@ const AllDates = dynamic(() => import("../../components/date/all"), {
 const ScannerPageInner: NextPage<
    InferGetStaticPropsType<typeof getStaticProps>
 > = (props) => {
-   const [signedInRT, date] = useSignIn("scanner-" + props.scanner.name);
-   const [mode, setMode] = useState<
-      "realtime" | "date-to-realtime" | "date-to-date"
-   >("realtime");
+   const [mode, setMode] = useState<ScannerModes>("realtime");
    const [endDate, setEndDate] = useState(
-      parseAbsoluteToLocal(dayjs(date).toISOString())
+      parseAbsoluteToLocal(dayjs().subtract(5, "seconds").toISOString())
    );
    const [startDate, setStartDate] = useState(
       parseAbsoluteToLocal(dayjs().subtract(1, "hour").toISOString())
@@ -46,25 +44,15 @@ const ScannerPageInner: NextPage<
          classId: selectedClass as number,
       },
    ]);
-   const signedInD = trpc.useQuery([
-      "signIn.all-signins-by-date",
-      {
-         scannerName: props.scanner.name,
-         startDate: startDate.toDate(),
-         endDate: endDate.toDate(),
-      },
-   ]);
+   const { signIns, connectionDate, ...signInData } = useSignIns({
+      scannerName: props.scanner.name,
+      startDate: startDate.toDate(),
+      endDate: endDate?.toDate(),
+      mode,
+   });
 
-   const signedIn = useMemo(() => {
-      if (signedInD.isSuccess && Array.isArray(signedInD.data)) {
-         if (mode === "date-to-realtime")
-            return [...signedInRT, ...signedInD.data];
-         else if (mode === "date-to-date") return signedInD.data;
-         else return signedInRT;
-      } else {
-         return signedInRT;
-      }
-   }, [signedInRT, signedInD.isSuccess, signedInD.data, mode]);
+   const isLoading =
+      signInData.isLoading || people.isLoading || !people.isSuccess;
 
    return (
       <div>
@@ -72,40 +60,37 @@ const ScannerPageInner: NextPage<
          <ClassChooser {...{ selectedClass, setSelectedClass }} />
          {selectedClass !== undefined && (
             <>
-               <ModeChooser {...({ date, setMode, setEndDate } as any)} />
+               <ModeChooser
+                  {...{
+                     connectionDate,
+                     setMode,
+                     setEndDate,
+                     date: connectionDate,
+                  }}
+               />
                <Suspense fallback={"Loading..."}>
                   <AllDates
-                     {...({
+                     {...{
                         mode,
                         startDate,
                         setStartDate,
                         endDate,
                         setEndDate,
-                     } as any)}
+                     }}
                   />
                </Suspense>
-               {(mode !== "realtime" ? signedInD.isLoading : false) ||
-               people.isLoading ? (
+               {isLoading ? (
                   <p>Loading...</p>
                ) : (
-                  people.isSuccess && (
-                     <AllTables
-                        {...{
-                           signedInD: {
-                              isLoading: signedInD.isLoading,
-                           },
-                           signedIn,
-                           mode,
-                           people: {
-                              data: people.data,
-                              isLoading: people.isLoading,
-                           },
-                        }}
-                     />
-                  )
+                  <AllTables
+                     {...{
+                        people: people.data,
+                        signIns,
+                     }}
+                  />
                )}
-               length of signedIn: {signedIn.length}
-               {signedInD.isError && "Error"}
+               length of signedIn: {signIns.length}
+               {signInData.error && "Error"}
             </>
          )}
       </div>

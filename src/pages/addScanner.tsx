@@ -4,7 +4,7 @@ import scannerSchema from "../schemas/scanner";
 import { z } from "zod";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
-import { trpc } from "../utils/trpc";
+import { trpc } from "~/trpc";
 import { getBaseUrl } from "./_app";
 import { useQueryClient } from "react-query";
 import ScannerList from "../components/scannerList";

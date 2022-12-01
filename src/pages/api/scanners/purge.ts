@@ -1,7 +1,7 @@
 import type { NextApiHandler } from "next";
 import { z } from "zod";
-import { env } from "../../../env/server.mjs";
-import { prisma } from "../../../server/db/client";
+import { env } from "~/env/server";
+import { prisma } from "~/db";
 import dayjs from "dayjs";
 
 const handler: NextApiHandler = async (req, res) => {

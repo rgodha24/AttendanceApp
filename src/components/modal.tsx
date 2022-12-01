@@ -33,7 +33,9 @@ const Modal: React.FC<ModalProps> = (props) => {
                   Close
                </button>
                {props.isDeleting && (
-                  <p className="flex justify-center items-center m-auto p-4 text-xl mt-4 ">Deleting...</p>
+                  <p className="flex justify-center items-center m-auto p-4 text-xl mt-4 ">
+                     Deleting...
+                  </p>
                )}
                {/* {JSON.stringify(props)} */}
             </Dialog.Panel>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { useSession, signIn } from "next-auth/react";
 import Select from "react-select";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "~/trpc";
 
 const ClassChooser: React.FC<ClassChooserProps> = ({
    setSelectedClass,
@@ -17,7 +17,8 @@ const ClassChooser: React.FC<ClassChooserProps> = ({
 
    return (
       <div>
-         Choose a class{selectedClass === undefined && " before continuing"}:{" "}
+         Choose a class{selectedClass === undefined && " before continuing"}
+         {": "}
          {classes.isLoading && "Loading..."}
          {classes.isError && (
             <button

@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 import { z } from "zod";
-import scannerNameSchema from "../../../../schemas/scannerName";
+import scannerNameSchema from "~/schemas/scannerName";
 
 const handler: NextApiHandler<string | { error: string }> = async (
    req,
@@ -19,7 +19,8 @@ const handler: NextApiHandler<string | { error: string }> = async (
       return;
    }
    const baseUrl =
-      `https://${process.env.VERCEL_URL}` || `http://localhost:${process.env.PORT || 3000}`;
+      `https://${process.env.VERCEL_URL}` ||
+      `http://localhost:${process.env.PORT || 3000}`;
    res.status(200).send(
       createCode(baseUrl, scannerName.data, scannerSecret.data)
    );

@@ -2,7 +2,7 @@ import { createProtectedRouter } from "./protected-router";
 import { z } from "zod";
 import crypto from "crypto";
 import { TRPCError } from "@trpc/server";
-import scannerNameSchema from "../../schemas/scannerName";
+import scannerNameSchema from "~/schemas/scannerName";
 
 export const scannerRouter = createProtectedRouter()
    .mutation("create-scanner", {
@@ -112,6 +112,6 @@ export const scannerRouter = createProtectedRouter()
             ctx.revalidate(`/scanners/${scanner.name}`),
          ]);
 
-         return {...answer, ...signIns};
+         return { ...answer, ...signIns };
       },
    });

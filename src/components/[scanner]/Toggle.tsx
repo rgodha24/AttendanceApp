@@ -5,7 +5,9 @@ const Toggle: React.FC<ToggleProps> = ({ enabled, setEnabled }) => {
    return (
       <Switch.Group>
          <div className="flex items-center">
-            <Switch.Label className="mr-4 cursor-pointer">Deduplicate Signed In Table</Switch.Label>
+            <Switch.Label className="mr-4 cursor-pointer">
+               Deduplicate Signed In Table
+            </Switch.Label>
             <Switch
                checked={enabled}
                onChange={setEnabled}

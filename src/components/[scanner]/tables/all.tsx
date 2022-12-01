@@ -1,15 +1,13 @@
 import { People, SignIn } from "@prisma/client";
 import { useState } from "react";
 import { NotSignedInTable, SignedInTable, UnknownSignedInTable } from ".";
+import { useSignInTableData } from "~/utils/hooks/useSignInTableData";
 import Toggle from "../Toggle";
 
-const AllTables: React.FC<AllTableProps> = ({
-   signedInD,
-   mode,
-   signedIn,
-   people,
-}) => {
+const AllTables: React.FC<AllTableProps> = ({ signIns, people }) => {
    const [dedup, setDedup] = useState(false);
+   const [signedInTableData, notSignedInTableData, unknownSignedInTableData] =
+      useSignInTableData([signIns, people]);
    return (
       <div className="flex-col">
          <div>
@@ -18,51 +16,15 @@ const AllTables: React.FC<AllTableProps> = ({
          <div className="flex flex-row space-between justify-between ">
             <div className="flex-col">
                <h2 className="text-xl">Signed in</h2>
-               <SignedInTable
-                  isLoading={
-                     (mode !== "realtime" ? signedInD.isLoading : false) ||
-                     people.isLoading
-                  }
-                  dedup={dedup}
-                  data={signedIn
-                     .filter((value) => {
-                        return people.data.has(value.studentId);
-                     })
-                     .map((value) => {
-                        return {
-                           // we can assert non null here b/c we just filtered out all studentIds that are not in the map
-                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                           ...people.data.get(value.studentId)!,
-                           timestamp: value.timestamp,
-                        };
-                     })}
-               />
+               <SignedInTable dedup={dedup} data={signedInTableData} />
             </div>
             <div className="flex-col">
                <h2 className="text-xl">Not signed in</h2>
-               <NotSignedInTable
-                  isLoading={
-                     (mode !== "realtime" ? signedInD.isLoading : false) ||
-                     people.isLoading
-                  }
-                  data={[...people.data.values()].filter((value) => {
-                     return !signedIn.some(
-                        (a) => a.studentId === value.studentId
-                     );
-                  })}
-               />
+               <NotSignedInTable data={notSignedInTableData} />
             </div>
             <div className="flex-col">
                <h2 className="text-xl">Signed in but not in class</h2>
-               <UnknownSignedInTable
-                  isLoading={
-                     (mode !== "realtime" ? signedInD.isLoading : false) ||
-                     people.isLoading
-                  }
-                  data={signedIn.filter((value) => {
-                     return !people.data.has(value.studentId);
-                  })}
-               />
+               <UnknownSignedInTable data={unknownSignedInTableData} />
             </div>
          </div>
       </div>
@@ -70,16 +32,7 @@ const AllTables: React.FC<AllTableProps> = ({
 };
 
 export interface AllTableProps {
-   signedInD: {
-      isLoading: boolean;
-      [key: string]: unknown;
-   };
-   mode: "realtime" | "date-to-realtime" | "date-to-date";
-   signedIn: SignIn[];
-   people: {
-      data: Map<number, People>;
-      isLoading: boolean;
-      [key: string]: unknown;
-   };
+   signIns: SignIn[];
+   people: Map<number, People>;
 }
 export default AllTables;

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { DatePickerNew } from "./DatePicker/DatePickerNew";
-import { DateValue } from "@internationalized/date";
+import type { ZonedDateTime } from "@internationalized/date";
 
 const AllDates: React.FC<AllDatesProps> = ({
    mode,
@@ -40,10 +40,10 @@ const AllDates: React.FC<AllDatesProps> = ({
 
 interface AllDatesProps {
    mode: "realtime" | "date-to-realtime" | "date-to-date";
-   startDate: DateValue;
-   setStartDate: Dispatch<SetStateAction<DateValue>>;
-   endDate: DateValue;
-   setEndDate: Dispatch<SetStateAction<DateValue>>;
+   startDate: ZonedDateTime;
+   setStartDate: Dispatch<SetStateAction<ZonedDateTime>>;
+   endDate: ZonedDateTime;
+   setEndDate: Dispatch<SetStateAction<ZonedDateTime>>;
 }
 
 export default AllDates;

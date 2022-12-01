@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { trpc } from "../utils/trpcVanilla";
+import { trpc } from "~/trpcVanilla";
 
 const scannerSchema = z.object({
    name: z

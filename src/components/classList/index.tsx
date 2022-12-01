@@ -1,4 +1,4 @@
-import { inferQueryOutput, trpc } from "../../utils/trpc";
+import { inferQueryOutput, trpc } from "~/trpc";
 import Class from "./class";
 
 /**

@@ -81,7 +81,13 @@ export type CalendarGridProps = {
    state: CalendarState | RangeCalendarState;
 } & AriaCalendarGridProps;
 
-function CalendarCell({ state, date }: {date: AriaCalendarCellProps["date"], state: CalendarState | RangeCalendarState}) {
+function CalendarCell({
+   state,
+   date,
+}: {
+   date: AriaCalendarCellProps["date"];
+   state: CalendarState | RangeCalendarState;
+}) {
    const ref = createRef<HTMLDivElement>();
    const {
       cellProps,

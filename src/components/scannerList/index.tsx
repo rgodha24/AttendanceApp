@@ -1,4 +1,4 @@
-import { inferQueryOutput, trpc } from "../../utils/trpc";
+import { inferQueryOutput, trpc } from "~/trpc";
 import Scanner from "./scanner";
 
 const ScannerList: React.FC<ScannerListProps> = (props) => {

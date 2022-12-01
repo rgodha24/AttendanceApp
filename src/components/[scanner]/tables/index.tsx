@@ -36,7 +36,7 @@ const SignedInTable: React.FC<
 
    const data = useMemo(
       () =>
-         (props.dedup || false)
+         props.dedup || false
             ? ([...new Set(props.data.map((a) => a.studentId)).values()]
                  .map((id) => props.data.find((a) => a.studentId === id))
                  .filter((a) => a !== undefined) as SignedInTableUnit[])
@@ -155,7 +155,7 @@ export type NotSignedInTableUnit = People | Omit<People, "id">;
 
 export type TableProps<T> = {
    data: T[];
-   isLoading: boolean;
+   isLoading?: boolean;
 };
 
 export { SignedInTable, UnknownSignedInTable, NotSignedInTable };

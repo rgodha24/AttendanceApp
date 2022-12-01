@@ -15,7 +15,16 @@
       "jsx": "preserve",
       "incremental": true,
       "noUncheckedIndexedAccess": true,
-      "downlevelIteration": true
+      "downlevelIteration": true,
+      "baseUrl": "./",
+      "paths": {
+         "~/hooks/*": ["src/utils/hooks/*"],
+         "~/db": ["src/server/db/client"],
+         "~/env/client": ["src/env/client.mjs"],
+         "~/env/server": ["src/env/server.mjs"],
+         "~/trpc": ["src/utils/trpc"],
+         "~/*": ["src/*"]
+      }
    },
    "include": [
       "next-env.d.ts",
@@ -25,7 +34,8 @@
       "**/*.js",
       "random.mjs",
       "prisma/seed.mjs",
-      "tailwind.config.cjs"
+      "tailwind.config.cjs",
+      "./src/**/*"
    ],
    "exclude": ["node_modules"]
 }

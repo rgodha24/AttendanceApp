@@ -21,7 +21,7 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
             header: true,
             complete: (results) => {
                const data = results.data;
-               console.table(data[0])
+               console.table(data[0]);
                try {
                   const cleanedData = (data as Record<string, unknown>[]).map(
                      (a) => {
@@ -33,7 +33,7 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
                         };
                      }
                   );
-                  console.table(cleanedData[0])
+                  console.table(cleanedData[0]);
                   const parsedData = peopleClassSchema.parse(cleanedData);
                   setError(false);
                   setData(parsedData);
@@ -83,11 +83,7 @@ const AddClassFileInput: React.FC<AddClassFileInputProps> = ({
          <button type="button" onClick={() => handleParse()}>
             Parse CSV
          </button>
-         {error && (
-            <p>
-               Error parsing
-            </p>
-         )}
+         {error && <p>Error parsing</p>}
          {data.length > 0 && !error && (
             <div>
                <p>
