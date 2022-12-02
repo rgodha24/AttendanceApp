@@ -31,7 +31,7 @@ const ClassChooser: React.FC<ClassChooserProps> = ({
          )}
          {classes.isSuccess &&
             (classes.data.length === 0 ? (
-               <Link href="/addCourse">
+               <Link href="/addCourse" legacyBehavior>
                   {"You don't have any classes. Click here to make one."}
                </Link>
             ) : (

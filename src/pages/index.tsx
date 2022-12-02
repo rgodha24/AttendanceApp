@@ -17,7 +17,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
                   key={scanner.id}
                   className="flex justify-center mt-4 text-xl"
                >
-                  <Link href={"/scanners/" + scanner.name}>{scanner.name}</Link>
+                  <Link href={"/scanners/" + scanner.name} legacyBehavior>{scanner.name}</Link>
                </div>
             )) || <div className="flex justify-center mt-4 text-xl ">None</div>}
          </div>

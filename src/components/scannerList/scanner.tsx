@@ -12,7 +12,7 @@ const Scanner: React.FC<ScannerProps> = (props) => {
             key={props.id}
             href={`/scanners/${props.name}`}
             className="flex-1"
-         >
+            legacyBehavior>
             <p className="cursor-pointer flex-1">
                Go to {props.name + "'"}s signin page
             </p>
@@ -21,7 +21,7 @@ const Scanner: React.FC<ScannerProps> = (props) => {
             href={`/api/scanners/${props.name}/code?secret=${encodeURI(
                props.scannerSecret
             )}`}
-         >
+            legacyBehavior>
             <p className="cursor-pointer flex-1">
                Go to the code to run this scanner
             </p>
