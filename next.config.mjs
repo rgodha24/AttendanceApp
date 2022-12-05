@@ -4,4 +4,17 @@ import withBundleAnalyzerImport from "@next/bundle-analyzer";
 const withBundleAnalyzer = withBundleAnalyzerImport({
    enabled: process.env.ANALYZE === "true",
 });
-export default withBundleAnalyzer({ reactStrictMode: true, swcMinify: true });
+export default withBundleAnalyzer({
+   reactStrictMode: true,
+   swcMinify: true,
+   experimental: {
+      swcPlugins: [
+         [
+            "next-superjson-plugin",
+            {
+               excluded: [],
+            },
+         ],
+      ],
+   },
+});

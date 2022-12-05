@@ -41,7 +41,8 @@ const ClassChooser: React.FC<ClassChooserProps> = ({
                      return { value: a.id, label: a.name };
                   })}
                   onChange={(value) => {
-                     setSelectedClass(value?.value);
+                     if (typeof value?.value !== "undefined"){
+                     setSelectedClass(value.value);}
                   }}
                   value={
                      classes.data

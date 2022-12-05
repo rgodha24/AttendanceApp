@@ -8,11 +8,9 @@ import { prisma } from "~/db";
 import type { Scanner } from "@prisma/client";
 import scannerNameSchema from "~/schemas/scannerName";
 import { trpc } from "~/trpc";
-import AllTables from "~/components/[scanner]/tables/all";
 import { useState, Suspense } from "react";
 import dayjs from "dayjs";
 import withUsePusher from "~/utils/withUsePusher";
-import Navbar from "~/components/Navbar";
 import { env } from "~/env/client";
 import ClassChooser from "~/components/[scanner]/ClassChooser";
 import ModeChooser from "~/components/[scanner]/ModeChooser";
@@ -20,9 +18,10 @@ import { parseAbsoluteToLocal } from "@internationalized/date";
 import dynamic from "next/dynamic";
 import { type ScannerModes } from "~/types/scannerModes";
 import { useSignIns } from "~/hooks/useSignIns";
+import PopoutTeamSignIns from "~/components/[scanner]/PopoutTeamSignIns";
+import Link from "next/link";
 
 const AllDates = dynamic(() => import("~/components/date/all"), {
-   ssr: false,
    suspense: true,
 });
 
@@ -38,34 +37,18 @@ const ScannerPageInner: NextPage<
    );
    const [selectedClass, setSelectedClass] = useState<number>();
 
-   const people = trpc.useQuery([
-      "class.get-people-by-class",
-      {
-         classId: selectedClass as number,
-      },
-   ]);
-   const { signIns, connectionDate, ...signInData } = useSignIns({
-      scannerName: props.scanner.name,
-      startDate: startDate.toDate(),
-      endDate: endDate?.toDate(),
-      mode,
-   });
-
-   const isLoading =
-      signInData.isLoading || people.isLoading || !people.isSuccess;
+   const [title, setTitle] = useState("");
 
    return (
       <div>
-         <Navbar title={`Scanner - ${props.scanner.name}`} />
          <ClassChooser {...{ selectedClass, setSelectedClass }} />
          {selectedClass !== undefined && (
             <>
                <ModeChooser
                   {...{
-                     connectionDate,
                      setMode,
                      setEndDate,
-                     date: connectionDate,
+                     date: new Date(),
                   }}
                />
                <Suspense fallback={"Loading..."}>
@@ -79,18 +62,26 @@ const ScannerPageInner: NextPage<
                      }}
                   />
                </Suspense>
-               {isLoading ? (
-                  <p>Loading...</p>
-               ) : (
-                  <AllTables
-                     {...{
-                        people: people.data,
-                        signIns,
-                     }}
-                  />
-               )}
-               length of signedIn: {signIns.length}
-               {signInData.error && "Error"}
+               <input
+                  type="text"
+                  name="Title"
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+               />
+               <Link
+                  href={`/scanners/${
+                     props.scanner.name
+                  }/team/popout?${new URLSearchParams({
+                     title,
+                     classId: selectedClass.toString(),
+                     mode,
+                     startDate: startDate.toDate().getTime().toString(),
+                     endDate: endDate?.toDate().getTime().toString(),
+                  }).toString()}`}
+               >
+                  Popout Link
+               </Link>
             </>
          )}
       </div>
@@ -135,9 +126,6 @@ const getStaticProps: GetStaticProps<{ scanner: Scanner }> = async (
    }
 };
 
-const ScannerPage = withUsePusher({
-   clientKey: env.NEXT_PUBLIC_PUSHER_KEY,
-   cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
-})(ScannerPageInner);
+const ScannerPage = ScannerPageInner;
 
 export { ScannerPage as default, getStaticPaths, getStaticProps };

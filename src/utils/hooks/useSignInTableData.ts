@@ -17,27 +17,42 @@ type UseSignInTableData = (
 
 export const useSignInTableData: UseSignInTableData = ([signIns, people]) => {
    const signedInTable = useMemo(() => {
-      return signIns
-         .map((value) => {
-            const a = people.get(value.studentId);
-            if (a !== undefined) {
-               return {
-                  ...a,
-                  timestamp: value.timestamp,
-               };
-            } else {
-               return undefined;
-            }
-         })
-         .filter((a) => a !== undefined) as (People & { timestamp: Date })[];
+      return getSignedIn([signIns, people]);
    }, [people, signIns]);
    const notSignedInTable = useMemo(() => {
-      return [...people.values()].filter((value) => {
-         return !signIns.some((a) => a.studentId === value.studentId);
-      });
+      return getNotSignedIn([signIns, people]);
    }, [people, signIns]);
    const unknownSignedInTable = useMemo(() => {
-      return signIns.filter((value) => !people.has(value.studentId));
+      return getUnknownSignIns([signIns, people]);
    }, [people, signIns]);
    return [signedInTable, notSignedInTable, unknownSignedInTable];
+};
+
+export const getSignedIn = ([signIns, people]: UseSignInTableDataParams) => {
+   return signIns
+      .map((value) => {
+         const a = people.get(value.studentId);
+         if (a !== undefined) {
+            return {
+               ...a,
+               timestamp: value.timestamp,
+            };
+         } else {
+            return undefined;
+         }
+      })
+      .filter((a) => a !== undefined) as (People & { timestamp: Date })[];
+};
+
+export const getNotSignedIn = ([signIns, people]: UseSignInTableDataParams) => {
+   return [...people.values()].filter((value) => {
+      return !signIns.some((a) => a.studentId === value.studentId);
+   });
+};
+
+export const getUnknownSignIns = ([
+   signIns,
+   people,
+]: UseSignInTableDataParams) => {
+   return signIns.filter((value) => !people.has(value.studentId));
 };

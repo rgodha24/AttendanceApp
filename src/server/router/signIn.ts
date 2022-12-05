@@ -2,42 +2,84 @@ import { createRouter } from "./context";
 import { z } from "zod";
 import type { SignIn } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import scannerNameSchema from "~/schemas/scannerName";
+
+const signInByDateSchema = z.discriminatedUnion("mode", [
+   z.object({
+      mode: z.literal("date-to-realtime"),
+      scannerName: scannerNameSchema,
+      startDate: z.date(),
+      connectionDate: z.date(),
+   }),
+   z.object({
+      mode: z.literal("date-to-date"),
+      startDate: z.date(),
+      scannerName: scannerNameSchema,
+      endDate: z.date(),
+      connectionDate: z.date().optional(),
+   }),
+   z.object({
+      mode: z.literal("realtime"),
+      scannerName: scannerNameSchema,
+      connectionDate: z.date(),
+   }),
+]);
+
+export type SignInByDateInput = z.infer<typeof signInByDateSchema>;
 
 export const signInRouter = createRouter().query("all-signins-by-date", {
-   input: z.object({
-      scannerName: z.string(),
-      startDate: z.date(),
-      endDate: z.date(),
-   }),
-   resolve: async ({ ctx, input }) => {
+   input: signInByDateSchema,
+   resolve: async ({ ctx, input }): Promise<SignIn[]> => {
       const scanner = await ctx.prisma.scanner.findUnique({
          where: { name: input.scannerName },
       });
 
-      if (scanner === null) {
+      if (!scanner) {
          throw new TRPCError({
-            code: "BAD_REQUEST",
+            code: "NOT_FOUND",
             message: "Scanner not found",
          });
       }
-      const answer: SignIn[] = (
-         await ctx.prisma.signIn.findMany({
-            where: {
-               Scanner: {
-                  name: input.scannerName,
+
+      let answer: Omit<SignIn, "Scanner">[] = [];
+      switch (input.mode) {
+         case "realtime": {
+            answer = [];
+            break;
+         }
+         case "date-to-realtime": {
+            answer = await ctx.prisma.signIn.findMany({
+               where: {
+                  timestamp: {
+                     gte: input.startDate,
+                     lte: input.connectionDate,
+                  },
+                  Scanner: {
+                     name: input.scannerName,
+                  },
                },
-               timestamp: {
-                  gte: new Date(input.startDate.toISOString()),
-                  lte: new Date(input.endDate.toISOString()),
-                  // lte: input.startDate,
-                  // gte: input.endDate,
+            });
+            break;
+         }
+         case "date-to-date": {
+            answer = await ctx.prisma.signIn.findMany({
+               where: {
+                  timestamp: {
+                     gte: input.startDate,
+                     lte: input.endDate,
+                  },
+                  Scanner: {
+                     name: input.scannerName,
+                  },
                },
-            },
-         })
-      ).map((a) => {
+            });
+            break;
+         }
+      }
+
+      // console.log("length of signIn.all-signins-by-date: ", answer.length);
+      return answer.map((a) => {
          return { ...a, Scanner: scanner };
       });
-      // console.log("length of signIn.all-signins-by-date: ", answer.length);
-      return answer;
    },
 });

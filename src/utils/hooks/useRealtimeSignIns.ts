@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { SignIn } from "@prisma/client";
 
 import { useChannel, useEvent } from "@rgodha24/use-pusher";
@@ -20,10 +20,11 @@ const useRealtimeSignIns = (channelName: `scanner-${string}`) => {
       }
    });
 
-   const reset = () => {
+   const reset = useCallback( () => {
+      console.log("reset")
       setSignIns([]);
       setDateState((a) => a + 1);
-   };
+   }, []);
 
    return [signIns, date, reset] as const;
 };

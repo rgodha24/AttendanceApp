@@ -1,37 +1,36 @@
-import { useMemo } from "react";
-import { ScannerModes } from "~/types/scannerModes";
+import { useMemo, useCallback } from "react";
 import { trpc } from "../trpc";
 import useRealtimeSignIns from "./useRealtimeSignIns";
 
-interface UseSignInsParams {
-   scannerName: string;
-   mode: ScannerModes;
-   startDate: Date;
-   endDate?: Date;
-}
-
-export const useSignIns = ({
-   scannerName,
-   mode,
-   startDate,
-   endDate,
-}: UseSignInsParams) => {
+export type UseSignInsParams =
+   | {
+        mode: "date-to-realtime";
+        scannerName: string;
+        startDate: Date;
+     }
+   | {
+        mode: "date-to-date";
+        scannerName: string;
+        startDate: Date;
+        endDate: Date;
+     }
+   | {
+        mode: "realtime";
+        scannerName: string;
+     };
+export const useSignIns = (data: UseSignInsParams) => {
    const [realtimeSignins, connectionDate, reset] = useRealtimeSignIns(
-      `scanner-${scannerName}`
+      `scanner-${data.scannerName}`
    );
-   const utils = trpc.useContext();
+   const {invalidateQueries} = trpc.useContext();
 
    const dateSignins = trpc.useQuery(
-      [
-         "signIn.all-signins-by-date",
-         {
-            startDate,
-            endDate: endDate || connectionDate,
-            scannerName,
-         },
-      ],
+      ["signIn.all-signins-by-date", { ...data, connectionDate }],
       {
-         refetchInterval: 1000 * 60 * 5,
+         // refetchInterval: 1000 * 60 * 5,
+         // refetchOnWindowFocus: true,
+         // refetchOnReconnect: true,
+         cacheTime: 1000 * 60 * 5,
       }
    );
 
@@ -41,38 +40,40 @@ export const useSignIns = ({
       isLoading = false,
       isPlaceholder = false,
    } = useMemo(() => {
-      if (mode === "realtime") {
+      console.log("rerun");
+      if (data.mode === "realtime") {
          return { signIns: realtimeSignins };
       }
 
       if (dateSignins.isSuccess) {
-         if (mode === "date-to-realtime") {
+         if (data.mode === "date-to-realtime") {
             return { signIns: [...realtimeSignins, ...dateSignins.data] };
          }
-         if (mode === "date-to-date") {
+         if (data.mode === "date-to-date") {
             return { signIns: dateSignins.data };
          }
       } else {
-         if (mode === "date-to-realtime") {
+         if (data.mode === "date-to-realtime") {
             return {
                signIns: realtimeSignins,
                isLoading: true,
                isPlaceholder: true,
             };
-         } else if (mode === "date-to-date") {
+         } else if (data.mode === "date-to-date") {
             return { signIns: [], isLoading: true, isPlaceholder: true };
          }
       }
       return { signIns: [] as typeof realtimeSignins, error: true };
-   }, [realtimeSignins, mode, dateSignins.data, dateSignins.isSuccess]);
+   }, [data.mode, dateSignins.isSuccess, dateSignins.data, realtimeSignins]);
 
    return {
       signIns,
       connectionDate,
-      reset: () => {
+      reset: useCallback(() => {
          reset();
-         utils.invalidateQueries("signIn.all-signins-by-date");
-      },
+         invalidateQueries("signIn.all-signins-by-date");
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [reset]),
       error: error || dateSignins.isError,
       isLoading,
       isPlaceholder,

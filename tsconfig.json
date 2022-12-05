@@ -23,6 +23,7 @@
          "~/env/client": ["src/env/client.mjs"],
          "~/env/server": ["src/env/server.mjs"],
          "~/trpc": ["src/utils/trpc"],
+         "~/trpcVanilla": ["src/utils/trpcVanilla"],
          "~/*": ["src/*"]
       }
    },
