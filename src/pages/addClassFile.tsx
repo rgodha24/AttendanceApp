@@ -16,6 +16,8 @@ import Navbar from "../components/Navbar";
 import AddClassFileInput from "../components/addClass/FileInput";
 import { trpc } from "~/trpc";
 import { useQueryClient } from "react-query";
+import { useMutation } from "react-query";
+import { addClass } from "~/utils/addClass";
 
 const AddClassFiles: NextPage<
    InferGetServerSidePropsType<typeof getServerSideProps>
@@ -26,7 +28,10 @@ const AddClassFiles: NextPage<
    const [className, setClassName] = useState<string>("");
    const [validationError, setValidationError] = useState<string | null>(null);
    const [validated, setValidated] = useState<boolean>(false);
-   const mutation = trpc.useMutation("class.create-class");
+   const mutation = useMutation({
+      mutationFn: addClass,
+      mutationKey: "add-class",
+   });
    const queryClient = useQueryClient();
    const allClasses = trpc.useQuery(["class.get-all-classes-by-user"], {
       initialData: props.classes,
