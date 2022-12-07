@@ -16,11 +16,10 @@ export const addClass = async (
 
    const people = data.people.slice(splitNumber, data.people.length);
 
-   const answer: Promise<inferMutationOutput<"class.add-people-to-class">>[] =
-      [];
+   const answer: inferMutationOutput<"class.add-people-to-class">[] = [];
    for (let i = 0; i < people.length; i += splitNumber) {
       answer.push(
-         trpc.mutation("class.add-people-to-class", {
+         await trpc.mutation("class.add-people-to-class", {
             classId: classReturn.id,
             people: people.slice(
                i,
@@ -29,5 +28,5 @@ export const addClass = async (
          })
       );
    }
-   return Promise.all(answer);
+   return answer;
 };
