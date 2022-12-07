@@ -31,6 +31,8 @@ export const classRouter = createProtectedRouter()
          ),
       }),
       resolve: async ({ ctx, input }) => {
+         console.time("create-class")
+         console.log("starting create class", Date.now())
          const answer = await ctx.prisma.class
             .create({
                data: {
@@ -54,6 +56,7 @@ export const classRouter = createProtectedRouter()
                message: "Failed to create class",
             });
          }
+         console.timeEnd("create-class")
          return answer;
       },
    })
@@ -199,6 +202,45 @@ export const classRouter = createProtectedRouter()
          return await ctx.prisma.class.delete({
             where: {
                id: input.id,
+            },
+         });
+      },
+   })
+   .mutation("add-people-to-class", {
+      input: z.object({
+         classId: z.number(),
+         people: z.array(
+            z.object({
+               studentId: z.number(),
+               firstName: z.string(),
+               lastName: z.string(),
+            })
+         ),
+      }),
+      resolve: async ({ input, ctx }) => {
+         const userClasses = await ctx.prisma.class.findMany({
+            where: {
+               User: {
+                  id: ctx.session.user.id,
+               },
+            },
+            select: {
+               id: true,
+            },
+         });
+
+         if (!userClasses.some((classItem) => classItem.id === input.classId)) {
+            throw new TRPCError({ code: "UNAUTHORIZED" });
+         }
+
+         return await ctx.prisma.class.update({
+            where: {
+               id: input.classId,
+            },
+            data: {
+               people: {
+                  create: input.people,
+               },
             },
          });
       },
