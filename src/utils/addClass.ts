@@ -3,7 +3,7 @@ import { trpc } from "./trpcVanilla";
 
 export const addClass = async (
    data: inferMutationInput<"class.create-class">,
-   splitNumber = 30
+   splitNumber = 40
 ) => {
    if (data.people.length < splitNumber) {
       return trpc.mutation("class.create-class", data);
